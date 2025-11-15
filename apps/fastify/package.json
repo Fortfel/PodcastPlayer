@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production tsup && node create-prod-package.js",
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch --clear-screen=false src/index.ts",
     "start": "node dist/index.js",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",

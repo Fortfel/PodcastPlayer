@@ -114,6 +114,16 @@ const baseEnv = createEnv({
           }),
         ),
       ),
+
+    // Podcast Index
+    PI_AUTH_KEY: z.string().min(1),
+    PI_SECRET_KEY: z.string().min(1),
+    PI_USER_AGENT: z.string().min(1),
+    PI_API_ENDPOINT: z.url({
+      protocol: /^https?$/,
+      hostname: z.regexes.domain,
+      error: 'Invalid Podcast Index API endpoint',
+    }),
   },
 
   /**

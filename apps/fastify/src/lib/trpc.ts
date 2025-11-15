@@ -1,9 +1,16 @@
-import type { AppRouter, CreateFastifyContextOptions, FastifyTRPCPluginOptions } from '@workspace/api/server'
+import type {
+  AppRouter,
+  CreateFastifyContextOptions,
+  FastifyTRPCPluginOptions,
+  PodcastIndexApiInstance,
+} from '@workspace/api/server'
 import { appRouter, createTRPCContext } from '@workspace/api/server'
 
 import { env } from '#/env'
 
-export const getFastifyTRPCPluginOptions = (): FastifyTRPCPluginOptions<AppRouter> => ({
+export const getFastifyTRPCPluginOptions = (
+  podcastIndexApi: PodcastIndexApiInstance,
+): FastifyTRPCPluginOptions<AppRouter> => ({
   prefix: env.SERVER_API_PATH,
   trpcOptions: {
     router: appRouter,
@@ -12,6 +19,7 @@ export const getFastifyTRPCPluginOptions = (): FastifyTRPCPluginOptions<AppRoute
         req,
         res,
         info,
+        podcastApi: podcastIndexApi,
       })
     },
   } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],

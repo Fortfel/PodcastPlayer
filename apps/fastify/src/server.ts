@@ -5,11 +5,18 @@ import fastifyHelmet from '@fastify/helmet'
 import fastifyRateLimit from '@fastify/rate-limit'
 import fastify from 'fastify'
 
-import { fastifyTRPCPlugin } from '@workspace/api/server'
+import { fastifyTRPCPlugin, initPodcastIndexApi } from '@workspace/api/server'
 
 import { getLoggerConfig } from '#/config'
 import { env } from '#/env'
 import { getFastifyTRPCPluginOptions } from '#/lib/trpc'
+
+const podcastIndexApi = initPodcastIndexApi({
+  authKey: env.PI_AUTH_KEY,
+  secretKey: env.PI_SECRET_KEY,
+  userAgent: env.PI_USER_AGENT,
+  apiEndpoint: env.PI_API_ENDPOINT,
+})
 
 export function createServer(): {
   server: FastifyInstance
@@ -44,7 +51,7 @@ export function createServer(): {
   })
 
   // TRPC plugin
-  server.register(fastifyTRPCPlugin, getFastifyTRPCPluginOptions())
+  server.register(fastifyTRPCPlugin, getFastifyTRPCPluginOptions(podcastIndexApi))
 
   const stop = async (): Promise<void> => {
     try {

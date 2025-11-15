@@ -26,3 +26,5 @@ export { appRouter } from './router'
 export type { AppRouter, RouterInputs, RouterOutputs }
 export { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify'
 export type { CreateFastifyContextOptions, FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify'
+export { initPodcastIndexApi } from './services/podcast-index'
+export type { PodcastIndexApiInstance } from './services/podcast-index'

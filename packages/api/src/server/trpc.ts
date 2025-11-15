@@ -11,6 +11,8 @@ import { initTRPC } from '@trpc/server'
 import SuperJSON from 'superjson'
 import { z, ZodError } from 'zod'
 
+import type { PodcastIndexApiInstance } from './services/podcast-index'
+
 /**
  * 1. CONTEXT
  *
@@ -23,9 +25,11 @@ import { z, ZodError } from 'zod'
  *
  * @see https://trpc.io/docs/server/context
  */
-type CreateContextOptions = CreateFastifyContextOptions
+interface CreateContextOptions extends CreateFastifyContextOptions {
+  podcastApi: PodcastIndexApiInstance
+}
 
-export const createTRPCContext = ({ req, res }: CreateContextOptions) => {
+export const createTRPCContext = ({ req, res, podcastApi }: CreateContextOptions) => {
   // Convert Fastify headers to standard Headers object
   const headers = new Headers()
 
@@ -36,6 +40,7 @@ export const createTRPCContext = ({ req, res }: CreateContextOptions) => {
   return {
     req,
     res,
+    podcastApi,
   }
 }
 
