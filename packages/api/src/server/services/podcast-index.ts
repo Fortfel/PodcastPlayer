@@ -7,131 +7,29 @@ const PodcastFeedSchema = z.object({
   podcastGuid: z.string(),
   title: z.string(),
   url: z.url(),
-  originalUrl: z.url(),
-  link: z.url(),
   description: z.string(),
   author: z.string(),
-  ownerName: z.string(),
   image: z.url(),
-  artwork: z.url(),
-  lastUpdateTime: z.int(),
-  lastCrawlTime: z.int(),
-  lastParseTime: z.int(),
-  lastGoodHttpStatusTime: z.int(),
-  lastHttpStatus: z.int(),
-  contentType: z.string(),
   itunesId: z.int().nullable(),
-  generator: z.string(),
   language: z.string(),
-  explicit: z.boolean().optional(), // Optional - not present in iTunes ID response
-  type: z.union([z.literal(0), z.literal(1)]),
-  medium: z.string().optional(), // Optional - not present in iTunes ID response
-  dead: z.int(),
   episodeCount: z.int(),
-  crawlErrors: z.int(),
-  parseErrors: z.int(),
-  categories: z.record(z.string(), z.string()),
-  locked: z.union([z.literal(0), z.literal(1)]),
-  imageUrlHash: z.int().optional(), // Optional - only in iTunes ID response
-  newestItemPubdate: z.int().optional(), // Optional - only in iTunes ID response
-  funding: z
-    .object({
-      url: z.url(),
-      message: z.string(),
-    })
-    .optional(), // Optional - only in iTunes ID response
+  categories: z.record(z.string(), z.string()).nullable(),
 })
 
 const EpisodeSchema = z.object({
   id: z.int(),
   title: z.string(),
-  link: z.url(),
   description: z.string(),
   guid: z.string(),
   datePublished: z.int(),
-  datePublishedPretty: z.string(),
-  dateCrawled: z.int(),
   enclosureUrl: z.url(),
   enclosureType: z.string(),
-  enclosureLength: z.int(),
   duration: z.int().nullable(),
-  explicit: z.union([z.literal(0), z.literal(1)]),
   episode: z.int().nullable(),
-  episodeType: z.enum(['full', 'trailer', 'bonus']).nullable(),
   season: z.int().nullable(),
   image: z.url(),
-  feedItunesId: z.int().nullable(),
-  feedImage: z.url(),
   feedId: z.int(),
-  feedLanguage: z.string(),
-  feedDead: z.int(),
-  feedDuplicateOf: z.int().nullable(),
-  chaptersUrl: z.url().nullable(),
-  transcriptUrl: z.url().nullable(),
-  transcripts: z
-    .array(
-      z.object({
-        url: z.url(),
-        type: z.string(),
-      }),
-    )
-    .optional(),
-  soundbite: z
-    .object({
-      startTime: z.number(),
-      duration: z.number(),
-      title: z.string().optional(),
-    })
-    .optional(),
-  soundbites: z
-    .array(
-      z.object({
-        startTime: z.number(),
-        duration: z.number(),
-        title: z.string().optional(),
-      }),
-    )
-    .optional(),
-  persons: z
-    .array(
-      z.object({
-        name: z.string(),
-        role: z.string().optional(),
-        group: z.string().optional(),
-        img: z.url().optional(),
-        href: z.url().optional(),
-      }),
-    )
-    .optional(),
-  socialInteract: z
-    .array(
-      z.object({
-        protocol: z.string(),
-        uri: z.string(),
-        accountId: z.string().optional(),
-        accountUrl: z.url().optional(),
-      }),
-    )
-    .optional(),
-  value: z
-    .object({
-      type: z.string(),
-      method: z.string(),
-      suggested: z.number().optional(),
-      recipients: z
-        .array(
-          z.object({
-            name: z.string().optional(),
-            type: z.string(),
-            address: z.string(),
-            split: z.number(),
-            customKey: z.string().optional(),
-            customValue: z.string().optional(),
-          }),
-        )
-        .optional(),
-    })
-    .optional(),
+  feedImage: z.url(),
 })
 
 // Response schemas
