@@ -53,6 +53,44 @@ export function createServer(): {
   // TRPC plugin
   server.register(fastifyTRPCPlugin, getFastifyTRPCPluginOptions(podcastIndexApi))
 
+  server.setErrorHandler((error, request, reply) => {
+    const isProduction = env.NODE_ENV === 'production'
+
+    // Log the full error server-side
+    server.log.error(
+      {
+        err: error,
+        url: request.url,
+        method: request.method,
+      },
+      'Unhandled error',
+    )
+
+    const statusCode = error instanceof Error && 'statusCode' in error ? Number(error.statusCode) : 500
+
+    // Send sanitized error to client
+    if (isProduction) {
+      reply.status(statusCode).send({
+        error: {
+          statusCode,
+          message: 'Internal server error',
+        },
+      })
+    } else {
+      reply.status(statusCode).send({
+        error: {
+          statusCode,
+          ...(error instanceof Error && error.name ? { name: error.name } : {}),
+          ...(error instanceof Error && error.message
+            ? { message: error.message }
+            : { message: 'Internal server error' }),
+          ...(error instanceof Error && error.cause ? { cause: error.cause } : {}),
+          ...(error instanceof Error && error.stack ? { stack: error.stack } : {}),
+        },
+      })
+    }
+  })
+
   const stop = async (): Promise<void> => {
     try {
       server.log.info('Database connection pool closed')

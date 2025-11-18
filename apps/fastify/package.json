@@ -8,7 +8,8 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production tsup && node create-prod-package.js",
     "dev": "tsx watch --clear-screen=false src/index.ts",
-    "start": "node dist/index.js",
+    "dev:prod": "cross-env NODE_ENV=production tsx watch --clear-screen=false src/index.ts",
+    "start": "cross-env NODE_ENV=production node dist/index.js",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore"

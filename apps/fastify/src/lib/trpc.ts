@@ -22,5 +22,15 @@ export const getFastifyTRPCPluginOptions = (
         podcastApi: podcastIndexApi,
       })
     },
+    onError({ path, error, type }) {
+      const isProduction = env.NODE_ENV === 'production'
+
+      if (error.code === 'INTERNAL_SERVER_ERROR') {
+        console.error(`[TRPC Error] ${type} on ${path as string}:`, error)
+      } else if (!isProduction) {
+        // Log all errors in development
+        console.log(`[TRPC] ${error.code} on ${path as string}: ${error.message}`)
+      }
+    },
   } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],
 })
