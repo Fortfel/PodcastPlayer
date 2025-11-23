@@ -12,6 +12,9 @@
     "ui-add": "pnpm dlx shadcn@canary add && prettier '../../packages/ui/**/*.{ts,tsx}' './**/*.{ts,tsx}' --write --list-different"
   },
   "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "catalog:",
+    "@fontsource-variable/league-spartan": "^5.2.8",
+    "@fontsource-variable/source-serif-4": "catalog:",
     "@t3-oss/env-core": "catalog:",
     "@tabler/icons-react": "catalog:",
     "@tanstack/react-form": "catalog:",
