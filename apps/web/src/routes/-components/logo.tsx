@@ -1,8 +1,7 @@
 import type * as React from 'react'
+import { IconMicrophone } from '@tabler/icons-react'
 
 import { cn } from '@workspace/ui/lib/utils'
-
-import { LogoIcon } from '@/routes/-components/logo-icon'
 
 const Logo = ({ className, ...props }: React.ComponentProps<'div'>) => {
   return (
@@ -13,9 +12,9 @@ const Logo = ({ className, ...props }: React.ComponentProps<'div'>) => {
       {...props}
     >
       <div className={'bg-destructive text-destructive-foreground flex size-9 items-center justify-center rounded-md'}>
-        <LogoIcon aria-hidden="true" />
+        <IconMicrophone aria-hidden="true" />
       </div>
-      <span className={'font-semibold leading-5 tracking-tighter'}>todos</span>
+      <span className={'font-semibold leading-5 tracking-tight'}>Podcast Player</span>
     </div>
   )
 }
