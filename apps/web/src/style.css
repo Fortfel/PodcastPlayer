@@ -1,6 +1,6 @@
 @import '@workspace/tailwind-config/style.css';
 
-@import '@fontsource-variable/league-spartan';
+@import '@fontsource-variable/roboto';
 @import '@fontsource-variable/jetbrains-mono';
 @import '@fontsource-variable/source-serif-4';
 
@@ -25,13 +25,13 @@
 /*}*/
 
 :root {
-  --font-sans: 'League Spartan Variable', sans-serif;
+  --font-sans: 'Roboto Variable', sans-serif;
   --font-serif: 'Source Serif 4 Variable', serif;
   --font-mono: 'JetBrains Mono Variable', monospace;
 }
 
 .dark {
-  --font-sans: 'League Spartan Variable', sans-serif;
+  --font-sans: 'Roboto Variable', sans-serif;
   --font-serif: 'Source Serif 4 Variable', serif;
   --font-mono: 'JetBrains Mono Variable', monospace;
 }

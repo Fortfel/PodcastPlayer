@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "catalog:",
-    "@fontsource-variable/league-spartan": "^5.2.8",
+    "@fontsource-variable/roboto": "^5.2.9",
     "@fontsource-variable/source-serif-4": "catalog:",
     "@t3-oss/env-core": "catalog:",
     "@tabler/icons-react": "catalog:",
