@@ -1,0 +1,131 @@
+import * as React from 'react'
+
+import { ScrollArea } from '@workspace/ui/components/scroll-area'
+import { cn } from '@workspace/ui/lib/utils'
+
+const PodcastsList = ({
+  searchRect,
+  className,
+  ...props
+}: React.ComponentProps<'div'> & { searchRect: DOMRectReadOnly | null }) => {
+  const searchHeight = `${(searchRect?.height ?? 0).toString()}px`
+
+  return (
+    <div data-slot="podcast-card" className={cn('bg-muted @container rounded-lg', className)} {...props}>
+      <ScrollArea
+        className="h-[calc(100dvh-var(--nav-height)-var(--search-height)-90px)]"
+        style={{ '--search-height': searchHeight } as React.CSSProperties}
+      >
+        <div className="flex flex-col gap-6 p-4 sm:p-6">
+          pulsing podcast icon here
+          <div className="bg-card @max-md:flex-col @max-md:items-center flex items-start gap-2 rounded-lg shadow-xl">
+            <img
+              src="/default-podcast.png"
+              alt="default-podcast"
+              className="shrink-1 size-full min-w-32 max-w-60 object-cover"
+            />
+            <ScrollArea className="h-60 flex-1">
+              <div className="@max-md:flex-none text-muted-foreground @max-md:min-w-0 flex h-full min-w-64 flex-1 flex-col gap-2 overflow-y-auto p-4">
+                <h2 className="@max-md:text-center text-foreground text-xl font-semibold">Title</h2>
+                <p className="text-sm/4.5 text-justify">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus delectus dignissimos doloremque
+                  eos error maiores minima minus, molestiae nam natus nisi nobis numquam odio quibusdam recusandae
+                  repudiandae saepe, vel voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet
+                  atque dignissimos ducimus earum enim labore quo voluptatibus. Accusamus beatae consectetur eligendi
+                  expedita iusto quae unde. Libero minus neque possimus ullam! Lorem ipsum dolor sit amet, consectetur
+                  adipisicing elit. Amet aspernatur blanditiis consectetur dicta fuga harum impedit in itaque iusto
+                  minima molestias, odio officia, pariatur qui, repellendus sequi sit vel vero.
+                </p>
+                <p>
+                  <strong>Episodes:</strong> 50
+                </p>
+                <p className="text-sm">Newest Episode: 2025-11-28</p>
+              </div>
+            </ScrollArea>
+          </div>
+          <div className="bg-card @max-md:flex-col @max-md:items-center flex items-start gap-2 rounded-lg shadow-xl">
+            <img
+              src="/default-podcast.png"
+              alt="default-podcast"
+              className="shrink-1 size-full min-w-32 max-w-60 object-cover"
+            />
+            <div className="@max-md:flex-none @max-md:min-w-0 flex h-60 min-w-64 flex-1 flex-col gap-2 overflow-y-auto p-4">
+              <h2 className="@max-md:text-center text-xl font-semibold">Title</h2>
+              <p className="text-sm/4.5 text-muted-foreground text-justify">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus delectus dignissimos doloremque eos
+                error maiores minima minus, molestiae nam natus nisi nobis numquam odio quibusdam recusandae repudiandae
+              </p>
+              <p>
+                <strong>Episodes:</strong> 50
+              </p>
+              <p className="text-sm">Newest Episode: 2025-11-28</p>
+            </div>
+          </div>
+          <div className="bg-card @max-md:flex-col @max-md:items-center flex items-start gap-2 rounded-lg shadow-xl">
+            <img
+              src="/default-podcast.png"
+              alt="default-podcast"
+              className="shrink-1 size-full min-w-32 max-w-60 object-cover"
+            />
+            <div className="@max-md:flex-none @max-md:min-w-0 flex h-60 min-w-64 flex-1 flex-col gap-2 overflow-y-auto p-4">
+              <h2 className="@max-md:text-center text-xl font-semibold">Title</h2>
+              <p className="text-sm/4.5 text-justify">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus delectus dignissimos doloremque eos
+                error maiores minima minus, molestiae nam natus nisi nobis numquam odio quibusdam recusandae repudiandae
+                saepe, vel voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet atque
+              </p>
+              <p>
+                <strong>Episodes:</strong> 50
+              </p>
+              <p className="text-sm">Newest Episode: 2025-11-28</p>
+            </div>
+          </div>
+          <div className="bg-card @max-md:flex-col @max-md:items-center flex items-start gap-2 rounded-lg shadow-xl">
+            <img
+              src="/default-podcast.png"
+              alt="default-podcast"
+              className="shrink-1 size-full min-w-32 max-w-60 object-cover"
+            />
+            <div className="@max-md:flex-none @max-md:min-w-0 flex h-60 min-w-64 flex-1 flex-col gap-2 overflow-y-auto p-4">
+              <h2 className="@max-md:text-center text-xl font-semibold">Title</h2>
+              <p className="text-sm/4.5 text-justify">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus delectus dignissimos doloremque eos
+                error maiores minima minus, molestiae nam natus nisi nobis numquam odio quibusdam recusandae repudiandae
+                saepe, vel voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet atque
+              </p>
+              <p>
+                <strong>Episodes:</strong> 50
+              </p>
+              <p>
+                <strong>Newest Episode:</strong> 2025-11-28
+              </p>
+            </div>
+          </div>
+          <div className="bg-card @max-md:flex-col @max-md:items-center flex items-start gap-2 rounded-lg shadow-xl">
+            <img
+              src="/default-podcast.png"
+              alt="default-podcast"
+              className="shrink-1 size-full min-w-32 max-w-60 object-cover"
+            />
+            <div className="@max-md:flex-none @max-md:min-w-0 flex h-60 min-w-64 flex-1 flex-col gap-2 overflow-y-auto p-4">
+              <h2 className="@max-md:text-center text-xl font-semibold">Title</h2>
+              <p className="text-sm/4.5 text-justify">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus delectus dignissimos doloremque eos
+                error maiores minima minus, molestiae nam natus nisi nobis numquam odio quibusdam recusandae repudiandae
+                saepe, vel voluptatibus. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet atque
+              </p>
+              <p>
+                <strong>Episodes:</strong> 50
+              </p>
+              <p>
+                <strong>Newest Episode:</strong> 2025-11-28
+              </p>
+            </div>
+          </div>
+        </div>
+      </ScrollArea>
+    </div>
+  )
+}
+
+export { PodcastsList }
