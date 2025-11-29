@@ -3,7 +3,7 @@
 import type { Dispatch } from 'react'
 import { useEffect, useState } from 'react'
 
-import { isBrowser } from '@workspace/ui/hooks/utils/const'
+import { isBrowser } from './utils/const'
 
 const queriesMap = new Map<string, { mql: MediaQueryList; dispatchers: Set<Dispatch<boolean>>; listener: () => void }>()
 
