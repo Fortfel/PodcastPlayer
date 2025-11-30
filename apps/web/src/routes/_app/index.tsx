@@ -1,52 +1,31 @@
 import * as React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 
-import { Button } from '@workspace/ui/components/button'
+import { useResizeObserver } from '@workspace/ui/hooks/use-resize-observer'
+import { cn } from '@workspace/ui/lib/utils'
+import { PodcastsList } from '@/routes/_app/-components/layout/podcasts-list'
+import { Search } from '@/routes/_app/-components/layout/search'
 
 export const Route = createFileRoute('/_app/')({
   component: HomeComponent,
 })
 
 function HomeComponent(): React.JSX.Element {
-  const [count, setCount] = React.useState(0)
+  const shadowClass = 'shadow-[0_15px_30px_5px_rgba(0,0,0,0.3)]'
+  const [searchRect, setSearchRect] = React.useState<DOMRectReadOnly | null>(null)
+  const searchRef = React.useRef<HTMLDivElement>(null)
+
+  useResizeObserver(searchRef, (entry) => {
+    setSearchRect(entry.contentRect)
+  })
 
   return (
-    <div className="grid grid-cols-1 grid-rows-[auto_1fr] gap-2 md:grid-cols-[minmax(0,1fr)_var(--container-2xs)] lg:grid-cols-[minmax(0,1fr)_var(--container-sm)]">
-      {/* Search */}
-      <div className="row-start-1">Search component</div>
+    <div className="grid flex-1 grid-cols-1 grid-rows-[auto_400px_1fr] gap-5 md:grid-cols-[minmax(0,1fr)_var(--container-2xs)] lg:grid-cols-[minmax(0,1fr)_var(--container-sm)]">
+      <Search ref={searchRef} className="mb-5" />
 
-      {/* Podcasts Player */}
-      <div className="row-start-2 px-4 py-6 sm:px-0">
-        <div className="rounded-lg border-4 border-dashed border-gray-200 p-8">
-          <div className="text-center">
-            <h1 className="mb-8 text-4xl font-bold text-gray-900">Vite + React + TanStack Router</h1>
-
-            <div className="h-[1000px] space-y-4">
-              <div className="rounded-lg p-6 shadow">
-                <Button variant="outline" onClick={() => setCount((count) => count + 1)}>
-                  count is {count}
-                </Button>
-                <p className="mt-4 text-gray-600">
-                  Edit <code className="rounded px-2 py-1">src/routes/index.tsx</code> and save to test HMR
-                </p>
-              </div>
-
-              <div className="rounded-lg p-6 shadow">
-                <h2 className="mb-2 text-xl font-semibold">🚀 Features Enabled</h2>
-                <ul className="space-y-1 text-left text-gray-600">
-                  <li>✅ TanStack Router with file-based routing</li>
-                  <li>✅ TanStack Query for data fetching</li>
-                  <li>✅ tRPC for type-safe APIs</li>
-                  <li>✅ Better Auth for authentication</li>
-                  <li>✅ Tailwind CSS for styling</li>
-                </ul>
-              </div>
-            </div>
-
-            <p className="mt-8 text-gray-500">Click on the Vite and React logos to learn more</p>
-          </div>
-        </div>
-      </div>
+      <PodcastsList className={cn(shadowClass, 'row-span-2 row-start-2')} searchRect={searchRect} />
+      <Player className={cn(shadowClass, 'hidden md:col-start-2 md:row-span-1 md:row-start-2 md:flex')} />
+      <div className={cn(shadowClass, 'hidden md:col-start-2 md:row-span-1 md:row-start-3 md:flex')}>last one</div>
     </div>
   )
 }
