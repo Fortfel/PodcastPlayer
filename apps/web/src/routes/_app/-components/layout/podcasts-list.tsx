@@ -1,4 +1,4 @@
-import * as React from 'react'
+import type * as React from 'react'
 
 import { ScrollArea } from '@workspace/ui/components/scroll-area'
 import { cn } from '@workspace/ui/lib/utils'
@@ -24,8 +24,8 @@ const PodcastsList = ({
               alt="default-podcast"
               className="shrink-1 size-full min-w-32 max-w-60 object-cover"
             />
-            <ScrollArea className="h-60 flex-1">
-              <div className="@max-md:flex-none text-muted-foreground @max-md:min-w-0 flex h-full min-w-64 flex-1 flex-col gap-2 overflow-y-auto p-4">
+            <ScrollArea className="@max-md:flex-col @max-md:min-w-0 flex h-60 min-w-64 flex-1 p-4">
+              <div className="text-muted-foreground flex flex-col gap-2">
                 <h2 className="@max-md:text-center text-foreground text-xl font-semibold">Title</h2>
                 <p className="text-sm/4.5 text-justify">
                   Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus delectus dignissimos doloremque
