@@ -21,29 +21,31 @@ function HomeComponent(): React.JSX.Element {
 
 
   return isDesktop ? (
-    <div className="grid max-h-[calc(100dvh-var(--nav-height)-50px)] grid-cols-[minmax(0,1fr)_var(--container-sm)] grid-rows-[auto_400px_1fr] gap-5 gap-x-8">
-      <Search className="mb-5" />
+    <div className="grid max-h-[max(800px,calc(100dvh-var(--nav-height)-50px))] grid-cols-[minmax(0,1fr)_var(--container-sm)] grid-rows-[auto_400px_1fr] gap-5 gap-x-8">
+      <Search className="-mr-24 mb-5" />
 
       <PodcastsList className={cn(shadowClass, 'row-span-2 row-start-2')} />
       <Player className={cn(shadowClass, 'col-start-2 row-span-1 row-start-2')} />
       <Queque className={cn(shadowClass, 'col-start-2 row-span-1 row-start-3 overflow-y-auto')} />
     </div>
   ) : (
-    <Tabs
-      defaultValue="search"
-      className="grid max-h-[calc(100dvh-var(--nav-height)-50px)] grid-cols-1 grid-rows-[auto_1fr]"
-    >
-      <TabsList className="[&>[data-slot=tabs-trigger][data-state=active]]:bg-success [&>[data-slot=tabs-trigger][data-state=active]]:text-success-foreground mb-4 flex h-12 w-full justify-center border">
+    <Tabs defaultValue="search" className="grid grid-cols-1 grid-rows-[auto_1fr]">
+      <TabsList className="[&>[data-slot=tabs-trigger][data-state=active]]:bg-success [&>[data-slot=tabs-trigger][data-state=active]]:text-success-foreground flex h-12 w-full justify-center border sm:mb-4">
         <TabsTrigger value="search">Search</TabsTrigger>
         <TabsTrigger value="listen">Listen</TabsTrigger>
       </TabsList>
-      <TabsContent value="search" className="-m-6.5 p-6.5 row-start-2 grid grid-rows-[auto_1fr] overflow-hidden">
+      <TabsContent value="search" className="row-start-2 grid grid-rows-[auto_1fr]">
         <Search className="mb-5" />
-        <PodcastsList className={cn(shadowClass, 'overflow-y-auto')} />
+        <PodcastsList className={cn(shadowClass, '')} />
       </TabsContent>
-      <TabsContent value="listen" className="-m-6.5 p-6.5 row-start-2 grid grid-rows-[auto_1fr] gap-8 overflow-hidden">
-        <Player className={cn(shadowClass, 'mt-2 [&_img]:-mt-10 [&_img]:mb-5')} />
-        <Queque className={cn(shadowClass, 'overflow-y-auto')} />
+      <TabsContent value="listen" className="row-start-2 grid grid-rows-[auto_1fr] gap-8">
+        <Player
+          className={cn(
+            shadowClass,
+            '[&_img]:w-30 mt-2 [&>div>div:first-child]:flex-row [&>div>div:first-child]:gap-5 sm:[&>div>div:first-child]:flex-col sm:[&>div>div:first-child]:gap-1 [&_img]:mb-0 [&_img]:mt-0 sm:[&_img]:-mt-10 sm:[&_img]:mb-5',
+          )}
+        />
+        <Queque className={cn(shadowClass, '')} />
       </TabsContent>
     </Tabs>
   )
