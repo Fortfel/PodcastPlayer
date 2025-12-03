@@ -15,7 +15,7 @@ function RouteComponent() {
       <AppNavbar height={navbarHeight} />
 
       <main
-        className={'mx-auto min-h-dvh max-w-7xl py-6 pt-[calc(var(--nav-height)+1.5rem)] sm:px-6 lg:px-8'}
+        className={'mx-auto min-h-dvh max-w-7xl px-2 py-6 pt-[calc(var(--nav-height)+1.5rem)] sm:px-4'}
         style={{ '--nav-height': navbarHeight } as React.CSSProperties}
       >
         <Outlet />

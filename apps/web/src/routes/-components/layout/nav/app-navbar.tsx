@@ -55,14 +55,14 @@ const AppNavbar = ({ height = '64px', className, ...props }: NavbarProps & React
         variant={'default'}
         asChild
         className={cn(
-          'after:-bottom-[2px]! after:opacity-0 after:brightness-[0.8]  after:transition-opacity',
+          'after:-bottom-[2px]! after:opacity-0 after:brightness-[0.8] after:transition-opacity',
           isScrolled && 'after:opacity-100',
         )}
       >
         <div className={'border-border bg-background/80 border-b backdrop-blur-md'}>
           <div
             className={
-              'mx-auto my-0 flex h-[var(--nav-height)] max-w-[var(--breakpoint-xl)] items-center justify-between px-2 sm:px-6 [&_[data-slot="separator"]]:h-6'
+              'mx-auto my-0 flex h-[var(--nav-height)] max-w-[var(--breakpoint-xl)] items-center justify-between px-2 sm:px-4 [&_[data-slot="separator"]]:h-6'
             }
           >
             <div className={'flex items-center justify-center gap-3'}>
