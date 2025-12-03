@@ -2,15 +2,12 @@ import * as React from 'react'
 import { Link } from '@tanstack/react-router'
 
 import { DivideLinePseudo } from '@workspace/ui/components/divide-line'
-import { Separator } from '@workspace/ui/components/separator'
 import { useTheme } from '@workspace/ui/components/theme-provider'
 import { ThemeSwitcherSwap, ThemeSwitcherToggle } from '@workspace/ui/components/theme-switcher'
 import { useMediaQuery } from '@workspace/ui/hooks/use-media-query'
 import { cn } from '@workspace/ui/lib/utils'
 
 import { config } from '@/config'
-import { NavMain } from '@/routes/-components/layout/nav/nav-main'
-import { NavMobile } from '@/routes/-components/layout/nav/nav-mobile'
 import { Logo } from '@/routes/-components/logo'
 
 type NavbarProps = {
@@ -23,7 +20,7 @@ const AppNavbar = ({ height = '64px', className, ...props }: NavbarProps & React
   const [isScrolled, setIsScrolled] = React.useState(false)
   const { theme, setTheme } = useTheme()
   const shouldShowThemeChangeAnimation = useMediaQuery('(min-width: 768px)')
-  const isDesktop = useMediaQuery('(min-width: 640px)')
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
 
   // Close mobile menu on desktop
   React.useEffect(() => {
@@ -69,18 +66,11 @@ const AppNavbar = ({ height = '64px', className, ...props }: NavbarProps & React
             }
           >
             <div className={'flex items-center justify-center gap-3'}>
-              {/* Mobile Menu */}
-              {!isDesktop && <NavMobile isOpen={isMenuOpen} onOpenChange={setIsMenuOpen} className={'sm:hidden'} />}
-
               <Link to={'/'} className={'w-fit'} aria-label="Todos - Go to homepage">
                 <Logo aria-hidden="true" />
               </Link>
             </div>
             <div className={'flex items-center gap-4'}>
-              {/* Desktop Menu */}
-              <NavMain className={'hidden sm:block'} />
-              <Separator orientation={'vertical'} className={'hidden sm:block'} />
-
               <div className={'flex items-center gap-4'}>
                 <ThemeSwitcherToggle
                   themes={config.themes}
@@ -98,11 +88,11 @@ const AppNavbar = ({ height = '64px', className, ...props }: NavbarProps & React
                   defaultValue={config.themeDefault}
                   onChange={setTheme}
                   value={theme}
-                  buttonVariant={'ghost'}
+                  buttonVariant={'outline-ghost'}
                   labelToggle={'Toggle theme'}
                   enableAnimation={shouldShowThemeChangeAnimation}
                   className={
-                    '[&>button]:hover:bg-black/4 [&>button]:hover:text-foreground -mx-1 lg:hidden dark:[&>button]:hover:bg-white/5'
+                    '[&>button]:hover:bg-black/4 [&>button]:hover:text-foreground lg:hidden dark:[&>button]:hover:bg-white/5'
                   }
                 />
               </div>

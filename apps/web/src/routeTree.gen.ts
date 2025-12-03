@@ -11,8 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppLayoutRouteImport } from './routes/_app/layout'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
-import { Route as AppPublicContactRouteImport } from './routes/_app/_public/contact'
-import { Route as AppPublicAboutRouteImport } from './routes/_app/_public/about'
 
 const AppLayoutRoute = AppLayoutRouteImport.update({
   id: '/_app',
@@ -23,45 +21,24 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppLayoutRoute,
 } as any)
-const AppPublicContactRoute = AppPublicContactRouteImport.update({
-  id: '/_public/contact',
-  path: '/contact',
-  getParentRoute: () => AppLayoutRoute,
-} as any)
-const AppPublicAboutRoute = AppPublicAboutRouteImport.update({
-  id: '/_public/about',
-  path: '/about',
-  getParentRoute: () => AppLayoutRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
-  '/about': typeof AppPublicAboutRoute
-  '/contact': typeof AppPublicContactRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
-  '/about': typeof AppPublicAboutRoute
-  '/contact': typeof AppPublicContactRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppLayoutRouteWithChildren
   '/_app/': typeof AppIndexRoute
-  '/_app/_public/about': typeof AppPublicAboutRoute
-  '/_app/_public/contact': typeof AppPublicContactRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/contact'
+  fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/contact'
-  id:
-    | '__root__'
-    | '/_app'
-    | '/_app/'
-    | '/_app/_public/about'
-    | '/_app/_public/contact'
+  to: '/'
+  id: '__root__' | '/_app' | '/_app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -84,33 +61,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppLayoutRoute
     }
-    '/_app/_public/contact': {
-      id: '/_app/_public/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof AppPublicContactRouteImport
-      parentRoute: typeof AppLayoutRoute
-    }
-    '/_app/_public/about': {
-      id: '/_app/_public/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AppPublicAboutRouteImport
-      parentRoute: typeof AppLayoutRoute
-    }
   }
 }
 
 interface AppLayoutRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
-  AppPublicAboutRoute: typeof AppPublicAboutRoute
-  AppPublicContactRoute: typeof AppPublicContactRoute
 }
 
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppIndexRoute: AppIndexRoute,
-  AppPublicAboutRoute: AppPublicAboutRoute,
-  AppPublicContactRoute: AppPublicContactRoute,
 }
 
 const AppLayoutRouteWithChildren = AppLayoutRoute._addFileChildren(
