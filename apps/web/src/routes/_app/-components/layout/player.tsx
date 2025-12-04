@@ -11,15 +11,23 @@ import { cn } from '@workspace/ui/lib/utils'
 
 const Player = ({ className, ...props }: React.ComponentProps<'div'>) => {
   return (
-    <div data-slot="player" className={cn('bg-muted rounded-lg ', className)} {...props}>
-      <div className="flex flex-col items-center gap-2 p-4">
-        <img
-          src="/default-podcast.png"
-          alt="default-podcast"
-          className="w-50 -mt-20 mb-10 rounded-full object-cover shadow-[0_15px_30px_5px_rgba(0,0,0,0.3)]"
-        />
-        <h2 className="text-2xl font-semibold">Podcast Title</h2>
-        <p>Date Published</p>
+    <div
+      data-slot="player"
+      className={cn('bg-muted rounded-lg [&>div>div:first-child]:flex-col', className)}
+      {...props}
+    >
+      <div className="flex h-full flex-col items-center gap-1 p-4">
+        <div className="flex items-center gap-1">
+          <img
+            src="/default-podcast.png"
+            alt="default-podcast"
+            className="w-50 -mt-20 mb-10 rounded-full object-cover shadow-[0_15px_30px_5px_rgba(0,0,0,0.3)]"
+          />
+          <div className="flex flex-col items-center">
+            <h2 className="text-2xl font-semibold">Podcast Title</h2>
+            <p>Date Published</p>
+          </div>
+        </div>
         <div className="mt-auto flex w-full flex-col items-center">
           <div className="flex w-full justify-between px-2">
             <p>00:00</p>
