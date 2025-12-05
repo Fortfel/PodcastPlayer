@@ -2,34 +2,112 @@ import * as React from 'react'
 
 import { Button } from '@workspace/ui/components/button'
 import { Input } from '@workspace/ui/components/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@workspace/ui/components/select'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@workspace/ui/components/select'
 import { cn } from '@workspace/ui/lib/utils'
 
-const Search = ({ className, ...props }: React.ComponentProps<'div'>) => {
+interface SearchProps extends React.ComponentProps<'div'> {
+  onSearch?: (query: string) => void
+  storageKey?: string
+  maxHistoryItems?: number
+}
+
+const Search = ({
+  className,
+  onSearch,
+  storageKey = 'podcastplayer-search-history',
+  maxHistoryItems = 10,
+  ...props
+}: SearchProps) => {
+  const [searchValue, setSearchValue] = React.useState('')
+  const [searchHistory, setSearchHistory] = React.useState<Array<string>>(() => {
+    try {
+      const saved = localStorage.getItem(storageKey)
+      return saved ? (JSON.parse(saved) as Array<string>) : []
+    } catch (error) {
+      console.error('Failed to load search history:', error)
+      return []
+    }
+  })
+
+  // Save history to localStorage whenever it changes
+  React.useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(searchHistory))
+    } catch (error) {
+      console.error('Failed to save search history:', error)
+    }
+  }, [searchHistory, storageKey])
+
+  const handleSearch = () => {
+    if (!searchValue.trim()) return
+
+    onSearch?.(searchValue)
+
+    // Avoid duplicates, add to beginning, and limit history size
+    setSearchHistory((prev) => {
+      const filtered = prev.filter((item) => item !== searchValue)
+      const newHistory = [searchValue, ...filtered]
+      return newHistory.slice(0, maxHistoryItems)
+    })
+  }
+
+  const handleClearHistory = () => {
+    setSearchHistory([])
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  }
+
   return (
     <div data-slot="search" className={cn('', className)} {...props}>
       <div className="flex flex-wrap items-center gap-2">
-        <Select>
+        <Select value="" onValueChange={setSearchValue}>
           <SelectTrigger className="w-full sm:flex-1">
             <SelectValue placeholder="Select a previous search" />
           </SelectTrigger>
           <SelectContent className="max-h-72">
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
-            <SelectItem value="option3">Option 3</SelectItem>
-            <SelectItem value="option4">Option 4</SelectItem>
-            <SelectItem value="option5">Option 5</SelectItem>
-            <SelectItem value="option6">Option 6</SelectItem>
-            <SelectItem value="option7">Option 7</SelectItem>
-            <SelectItem value="option8">Option 8</SelectItem>
-            <SelectItem value="option9">Option 9</SelectItem>
-            <SelectItem value="option10">Option 10</SelectItem>
+            <SelectGroup>
+              {searchHistory.length === 0 ? (
+                <SelectItem value="no-history" disabled>
+                  No search history
+                </SelectItem>
+              ) : (
+                searchHistory.map((item, index) => (
+                  <SelectItem key={`${item}-${index.toString()}`} value={item}>
+                    {item}
+                  </SelectItem>
+                ))
+              )}
+            </SelectGroup>
           </SelectContent>
         </Select>
-        <Input placeholder="Search by Podcast / Topic" className="w-full min-w-32 sm:flex-1" />
+        <Input
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          onKeyDown={handleKeyPress}
+          placeholder="Search by Podcast / Topic"
+          className="w-full min-w-32 sm:flex-1"
+        />
         <div className="flex w-full flex-1 items-center gap-2">
-          <Button className="flex-1">Search</Button>
-          <Button variant="destructive" className="flex-1">
+          <Button className="flex-1" onClick={handleSearch} disabled={!searchValue.trim()}>
+            Search
+          </Button>
+          <Button
+            variant="destructive"
+            className="flex-1"
+            onClick={handleClearHistory}
+            disabled={searchHistory.length === 0}
+          >
             Clear History
           </Button>
         </div>
