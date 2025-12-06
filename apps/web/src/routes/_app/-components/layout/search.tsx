@@ -1,5 +1,8 @@
 import * as React from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
+import type { RouterOutputs } from '@workspace/api/server'
+import { useTRPC } from '@workspace/api/client'
 import { Button } from '@workspace/ui/components/button'
 import { Input } from '@workspace/ui/components/input'
 import {
@@ -13,7 +16,8 @@ import {
 import { cn } from '@workspace/ui/lib/utils'
 
 interface SearchProps extends React.ComponentProps<'div'> {
-  onSearch?: (query: string) => void
+  onSearch?: (result: RouterOutputs['podcastIndex']['searchPodcastByTerm']) => void
+  onLoadingChange?: (isLoading: boolean) => void
   storageKey?: string
   maxHistoryItems?: number
 }
@@ -21,11 +25,16 @@ interface SearchProps extends React.ComponentProps<'div'> {
 const Search = ({
   className,
   onSearch,
+  onLoadingChange,
   storageKey = 'podcastplayer-search-history',
   maxHistoryItems = 10,
   ...props
 }: SearchProps) => {
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
+
   const [searchValue, setSearchValue] = React.useState('')
+  const [isSearching, setIsSearching] = React.useState(false)
   const [searchHistory, setSearchHistory] = React.useState<Array<string>>(() => {
     try {
       const saved = localStorage.getItem(storageKey)
@@ -45,17 +54,31 @@ const Search = ({
     }
   }, [searchHistory, storageKey])
 
-  const handleSearch = () => {
-    if (!searchValue.trim()) return
+  React.useEffect(() => {
+    onLoadingChange?.(isSearching)
+  }, [isSearching, onLoadingChange])
 
-    onSearch?.(searchValue)
+  const handleSearch = async () => {
+    const term = searchValue.trim()
+    if (!term) return
 
-    // Avoid duplicates, add to beginning, and limit history size
-    setSearchHistory((prev) => {
-      const filtered = prev.filter((item) => item !== searchValue)
-      const newHistory = [searchValue, ...filtered]
-      return newHistory.slice(0, maxHistoryItems)
-    })
+    setIsSearching(true)
+    try {
+      const result = await queryClient.fetchQuery(trpc.podcastIndex.searchPodcastByTerm.queryOptions({ term }))
+
+      onSearch?.(result)
+
+      // Avoid duplicates, add to beginning, and limit history size
+      setSearchHistory((prev) => {
+        const filtered = prev.filter((item) => item !== term)
+        const newHistory = [term, ...filtered]
+        return newHistory.slice(0, maxHistoryItems)
+      })
+    } catch (error) {
+      console.error('Search failed:', error)
+    } finally {
+      setIsSearching(false)
+    }
   }
 
   const handleClearHistory = () => {
@@ -64,7 +87,7 @@ const Search = ({
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      handleSearch()
+      void handleSearch()
     }
   }
 
@@ -99,8 +122,8 @@ const Search = ({
           className="w-full min-w-32 sm:flex-1"
         />
         <div className="flex w-full flex-1 items-center gap-2">
-          <Button className="flex-1" onClick={handleSearch} disabled={!searchValue.trim()}>
-            Search
+          <Button className="flex-1" onClick={() => void handleSearch()} disabled={!searchValue.trim() || isSearching}>
+            {isSearching ? 'Searching...' : 'Search'}
           </Button>
           <Button
             variant="destructive"
