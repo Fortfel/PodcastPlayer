@@ -9,7 +9,8 @@ const PodcastFeedSchema = z.object({
   url: z.url(),
   description: z.string(),
   author: z.string(),
-  image: z.url(),
+  image: z.union([z.string(), z.url()]),
+  lastUpdateTime: z.int(),
   itunesId: z.int().nullable(),
   language: z.string(),
   episodeCount: z.int(),
@@ -27,7 +28,7 @@ const EpisodeSchema = z.object({
   duration: z.int().nullable(),
   episode: z.int().nullable(),
   season: z.int().nullable(),
-  image: z.url(),
+  image: z.union([z.string(), z.url()]),
   feedId: z.int(),
   feedImage: z.url(),
 })
