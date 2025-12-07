@@ -10,7 +10,7 @@ const PodcastFeedSchema = z.object({
   description: z.string(),
   author: z.string(),
   image: z.union([z.string(), z.url()]),
-  lastUpdateTime: z.int(),
+  newestItemPubdate: z.int(),
   itunesId: z.int().nullable(),
   language: z.string(),
   episodeCount: z.int(),
@@ -125,7 +125,7 @@ const initPodcastIndexApi = ({
     searchEpisodeByItunesId: async (id: string, maxResults?: number): Promise<SearchEpisodeByItunesIdResponse> => {
       try {
         const response = await fetch(
-          `${apiEndpoint}/episodes/byitunesid?id=${id}${maxResults ? `&max=${maxResults.toString()}` : ''}`,
+          `${apiEndpoint}/episodes/byitunesid?id=${encodeURIComponent(id)}${maxResults ? `&max=${maxResults.toString()}` : ''}`,
           {
             method: 'GET',
             headers: generateAuthHeaders(),
