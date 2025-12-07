@@ -23,6 +23,7 @@
     "@tanstack/react-store": "catalog:",
     "@tanstack/zod-adapter": "catalog:",
     "@workspace/api": "workspace:*",
+    "html-react-parser": "^5.2.10",
     "lucide-react": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",

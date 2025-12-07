@@ -26,6 +26,7 @@
     "@radix-ui/react-separator": "catalog:",
     "@radix-ui/react-slot": "catalog:",
     "@radix-ui/react-tabs": "catalog:",
+    "@radix-ui/react-tooltip": "catalog:",
     "@radix-ui/react-use-controllable-state": "catalog:",
     "@tabler/icons-react": "catalog:",
     "@tanstack/react-form": "catalog:",
