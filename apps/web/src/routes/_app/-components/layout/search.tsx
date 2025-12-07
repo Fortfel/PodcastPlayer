@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useStore } from '@tanstack/react-store'
 
-import type { RouterOutputs } from '@workspace/api/server'
 import { useTRPC } from '@workspace/api/client'
 import { Button } from '@workspace/ui/components/button'
 import { Input } from '@workspace/ui/components/input'
@@ -15,17 +15,15 @@ import {
 } from '@workspace/ui/components/select'
 import { cn } from '@workspace/ui/lib/utils'
 
+import { usePodcastPlayerStore } from '@/hooks/use-podcast-player-store'
+
 interface SearchProps extends React.ComponentProps<'div'> {
-  onSearch?: (result: RouterOutputs['podcastIndex']['searchPodcastByTerm']) => void
-  onLoadingChange?: (isLoading: boolean) => void
   storageKey?: string
   maxHistoryItems?: number
 }
 
 const Search = ({
   className,
-  onSearch,
-  onLoadingChange,
   storageKey = 'podcastplayer-search-history',
   maxHistoryItems = 10,
   ...props
@@ -33,8 +31,11 @@ const Search = ({
   const trpc = useTRPC()
   const queryClient = useQueryClient()
 
+  const { store, setIsSubmitting, setPodcasts, setErrorMessage, clearErrorMessage, setActiveView } =
+    usePodcastPlayerStore()
+  const isSubmitting = useStore(store, (state) => state.isSubmitting)
+
   const [searchValue, setSearchValue] = React.useState('')
-  const [isSearching, setIsSearching] = React.useState(false)
   const [searchHistory, setSearchHistory] = React.useState<Array<string>>(() => {
     try {
       const saved = localStorage.getItem(storageKey)
@@ -54,19 +55,18 @@ const Search = ({
     }
   }, [searchHistory, storageKey])
 
-  React.useEffect(() => {
-    onLoadingChange?.(isSearching)
-  }, [isSearching, onLoadingChange])
-
   const handleSearch = async () => {
     const term = searchValue.trim()
     if (!term) return
 
-    setIsSearching(true)
+    setIsSubmitting(true)
+    clearErrorMessage()
+
     try {
       const result = await queryClient.fetchQuery(trpc.podcastIndex.searchPodcastByTerm.queryOptions({ term }))
 
-      onSearch?.(result)
+      setPodcasts(result)
+      setActiveView('podcast')
 
       // Avoid duplicates, add to beginning, and limit history size
       setSearchHistory((prev) => {
@@ -76,8 +76,9 @@ const Search = ({
       })
     } catch (error) {
       console.error('Search failed:', error)
+      setErrorMessage('Search failed')
     } finally {
-      setIsSearching(false)
+      setIsSubmitting(false)
     }
   }
 
@@ -122,14 +123,14 @@ const Search = ({
           className="w-full min-w-32 sm:flex-1"
         />
         <div className="flex w-full flex-1 items-center gap-2">
-          <Button className="flex-1" onClick={() => void handleSearch()} disabled={!searchValue.trim() || isSearching}>
-            {isSearching ? 'Searching...' : 'Search'}
+          <Button className="flex-1" onClick={() => void handleSearch()} disabled={!searchValue.trim() || isSubmitting}>
+            {isSubmitting ? 'Searching...' : 'Search'}
           </Button>
           <Button
             variant="destructive"
             className="flex-1"
             onClick={handleClearHistory}
-            disabled={searchHistory.length === 0}
+            disabled={searchHistory.length === 0 || isSubmitting}
           >
             Clear History
           </Button>
