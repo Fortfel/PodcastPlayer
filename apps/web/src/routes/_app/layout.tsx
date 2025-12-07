@@ -1,6 +1,7 @@
 import type * as React from 'react'
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 
+import { PodcastPlayerStoreProvider } from '@/providers/podcast-player-store-provider'
 import { AppNavbar } from '@/routes/-components/layout/nav/app-navbar'
 
 export const Route = createFileRoute('/_app')({
@@ -18,7 +19,9 @@ function RouteComponent() {
         className={'mx-auto min-h-dvh max-w-7xl px-2 py-6 pt-[calc(var(--nav-height)+1.5rem)] sm:px-4'}
         style={{ '--nav-height': navbarHeight } as React.CSSProperties}
       >
-        <Outlet />
+        <PodcastPlayerStoreProvider>
+          <Outlet />
+        </PodcastPlayerStoreProvider>
       </main>
     </div>
   )
