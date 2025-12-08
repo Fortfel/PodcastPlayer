@@ -20,9 +20,27 @@ const usePodcastPlayerStore = () => {
       setSelectedEpisode: (selectedEpisode: PodcastPlayerStoreState['selectedEpisode']) =>
         store.setState((s) => ({ ...s, selectedEpisode })),
       setEpisodes: (episodes: PodcastPlayerStoreState['episodes']) => store.setState((s) => ({ ...s, episodes })),
-      setQueue: (queue: PodcastPlayerStoreState['queue']) => store.setState((s) => ({ ...s, queue })),
-      setCurrentlyPlaying: (currentlyPlaying: PodcastPlayerStoreState['currentlyPlaying']) =>
-        store.setState((s) => ({ ...s, currentlyPlaying })),
+      addToQueue: (episode: PodcastPlayerStoreState['queue'][number]) =>
+        store.setState((s) => {
+          const isExisting = s.queue.some((e) => e.id === episode.id)
+          if (isExisting) return s
+          return { ...s, queue: [...s.queue, episode] }
+        }),
+      removeFromQueue: (episodeId: number) =>
+        store.setState((s) => ({ ...s, queue: s.queue.filter((e) => e.id !== episodeId) })),
+      clearQueue: () => store.setState((s) => ({ ...s, queue: [] })),
+      playEpisode: (episode: PodcastPlayerStoreState['currentlyPlaying']) =>
+        store.setState((s) => ({ ...s, currentlyPlaying: episode })),
+      playFromQueue: (episodeId: number) =>
+        store.setState((s) => {
+          const episode = s.queue.find((e) => e.id === episodeId)
+          if (!episode) return s
+          return {
+            ...s,
+            currentlyPlaying: episode,
+            queue: s.queue.filter((e) => e.id !== episodeId),
+          }
+        }),
       setErrorMessage: (errorMessage: PodcastPlayerStoreState['errorMessage']) =>
         store.setState((s) => ({ ...s, errorMessage })),
       clearErrorMessage: () => store.setState((s) => ({ ...s, errorMessage: null })),

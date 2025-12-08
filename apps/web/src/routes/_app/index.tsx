@@ -7,7 +7,7 @@ import { cn } from '@workspace/ui/lib/utils'
 
 import { Player } from '@/routes/_app/-components/layout/player'
 import { PodcastsList } from '@/routes/_app/-components/layout/podcasts-list'
-import { Queque } from '@/routes/_app/-components/layout/queque'
+import { Queue } from '@/routes/_app/-components/layout/queue'
 import { Search } from '@/routes/_app/-components/layout/search'
 
 export const Route = createFileRoute('/_app/')({
@@ -25,7 +25,7 @@ function HomeComponent(): React.JSX.Element {
 
       <PodcastsList className={cn(shadowClass, 'row-span-2 row-start-2')} />
       <Player className={cn(shadowClass, 'col-start-2 row-span-1 row-start-2')} />
-      <Queque className={cn(shadowClass, 'col-start-2 row-span-1 row-start-3 overflow-y-auto')} />
+      <Queue className={cn(shadowClass, 'col-start-2 row-span-1 row-start-3 overflow-y-auto')} />
     </div>
   ) : (
     <Tabs defaultValue="search" className="grid grid-cols-1 grid-rows-[auto_1fr]">
@@ -44,7 +44,7 @@ function HomeComponent(): React.JSX.Element {
             '[&_img]:w-30 mt-2 [&>div>div:first-child]:flex-row [&>div>div:first-child]:gap-5 sm:[&>div>div:first-child]:flex-col sm:[&>div>div:first-child]:gap-1 [&_img]:mb-0 [&_img]:mt-0 sm:[&_img]:-mt-10 sm:[&_img]:mb-5',
           )}
         />
-        <Queque className={cn(shadowClass, '')} />
+        <Queue className={cn(shadowClass, '')} />
       </TabsContent>
     </Tabs>
   )

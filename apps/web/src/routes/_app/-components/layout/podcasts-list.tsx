@@ -68,7 +68,13 @@ const PodcastCard = ({ feed, onSelect }: { feed: PodcastFeed; onSelect?: (feed: 
   </button>
 )
 
-const EpisodeCard = ({ episode }: { episode: Episode }) => (
+type EpisodeCardProps = {
+  episode: Episode
+  onPlay?: (episode: Episode) => void
+  onAddToQueue?: (episode: Episode) => void
+}
+
+const EpisodeCard = ({ episode, onPlay, onAddToQueue }: EpisodeCardProps) => (
   <div className="bg-card @max-md:flex-col @max-md:items-center hover:ring-primary/50 flex items-start gap-2 rounded-lg border text-left shadow-xl">
     <img
       src={episode.image || episode.feedImage || '/default-podcast.png'}
@@ -84,18 +90,29 @@ const EpisodeCard = ({ episode }: { episode: Episode }) => (
         <div className="@max-md:justify-center flex items-center gap-4">
           <Tooltip>
             <TooltipTrigger asChild>
-              <CirclePlayIcon
-                size={36}
+              <button
+                type="button"
+                onClick={() => onPlay?.(episode)}
                 className="hover:text-success focus:text-success cursor-pointer transition-colors"
-              />
+                aria-label="Play episode"
+              >
+                <CirclePlayIcon size={36} />
+              </button>
             </TooltipTrigger>
             <TooltipContent>Play Episode</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <ListIcon size={36} className="hover:text-primary focus:text-primary cursor-pointer transition-colors" />
+              <button
+                type="button"
+                onClick={() => onAddToQueue?.(episode)}
+                className="hover:text-primary focus:text-primary cursor-pointer transition-colors"
+                aria-label="Add to queue"
+              >
+                <ListIcon size={36} />
+              </button>
             </TooltipTrigger>
-            <TooltipContent>Add to playlist</TooltipContent>
+            <TooltipContent>Add to queue</TooltipContent>
           </Tooltip>
           <div>
             <p className="text-xs">Published: {new Date(episode.datePublished * 1000).toLocaleDateString()}</p>
@@ -113,8 +130,17 @@ const PodcastsList = ({ className, ...props }: React.ComponentProps<'div'>) => {
   const trpc = useTRPC()
   const queryClient = useQueryClient()
 
-  const { store, setIsSubmitting, setErrorMessage, clearErrorMessage, setActiveView, setSelectedPodcast, setEpisodes } =
-    usePodcastPlayerStore()
+  const {
+    store,
+    setIsSubmitting,
+    setErrorMessage,
+    clearErrorMessage,
+    setActiveView,
+    setSelectedPodcast,
+    setEpisodes,
+    addToQueue,
+    playEpisode,
+  } = usePodcastPlayerStore()
   const currentView = useStore(store, (state) => state.view)
   const isLoading = useStore(store, (state) => state.isSubmitting)
   const errorMessage = useStore(store, (state) => state.errorMessage)
@@ -165,7 +191,12 @@ const PodcastsList = ({ className, ...props }: React.ComponentProps<'div'>) => {
                 <h2 className="text-foreground text-lg font-semibold">{selectedPodcast?.title}</h2>
               </div>
               {episodes.items.map((episode) => (
-                <EpisodeCard key={episode.id} episode={episode} />
+                <EpisodeCard
+                  key={episode.id}
+                  episode={episode}
+                  onPlay={playEpisode}
+                  onAddToQueue={addToQueue}
+                />
               ))}
             </>
           ) : (
