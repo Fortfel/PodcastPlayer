@@ -58,9 +58,14 @@ const PodcastPlayerStoreProvider = ({ children }: { children: React.ReactNode })
       errorMessage: null,
     })
 
+    let prevQueue = initialQueue // Created once, lives in closure
+
     storeInstance.subscribe(() => {
       const { queue } = storeInstance.state
-      saveQueueToStorage(queue)
+      if (queue !== prevQueue) {
+        prevQueue = queue // Updates the closure variable
+        saveQueueToStorage(queue)
+      }
     })
 
     return storeInstance
