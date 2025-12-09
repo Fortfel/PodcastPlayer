@@ -63,7 +63,9 @@ const Search = ({
     clearErrorMessage()
 
     try {
-      const result = await queryClient.fetchQuery(trpc.podcastIndex.searchPodcastByTerm.queryOptions({ term }))
+      const result = await queryClient.fetchQuery(
+        trpc.podcastIndex.searchPodcastByTerm.queryOptions({ term, maxResults: 100 }),
+      )
 
       // Remove duplicates and podcasts with episodes = 0
       const titles = new Set<string>()

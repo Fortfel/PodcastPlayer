@@ -159,7 +159,7 @@ const PodcastsList = ({ className, ...props }: React.ComponentProps<'div'>) => {
 
     try {
       const result = await queryClient.fetchQuery(
-        trpc.podcastIndex.searchEpisodeByItunesId.queryOptions({ id: feed.itunesId.toString() }),
+        trpc.podcastIndex.searchEpisodeByItunesId.queryOptions({ id: feed.itunesId.toString(), maxResults: 1000 }),
       )
       setEpisodes(result)
     } catch (error) {
@@ -191,12 +191,7 @@ const PodcastsList = ({ className, ...props }: React.ComponentProps<'div'>) => {
                 <h2 className="text-foreground text-lg font-semibold">{selectedPodcast?.title}</h2>
               </div>
               {episodes.items.map((episode) => (
-                <EpisodeCard
-                  key={episode.id}
-                  episode={episode}
-                  onPlay={playEpisode}
-                  onAddToQueue={addToQueue}
-                />
+                <EpisodeCard key={episode.id} episode={episode} onPlay={playEpisode} onAddToQueue={addToQueue} />
               ))}
             </>
           ) : (
