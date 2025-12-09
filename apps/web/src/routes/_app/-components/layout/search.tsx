@@ -65,7 +65,20 @@ const Search = ({
     try {
       const result = await queryClient.fetchQuery(trpc.podcastIndex.searchPodcastByTerm.queryOptions({ term }))
 
-      setPodcasts(result)
+      // Remove duplicates and podcasts with episodes = 0
+      const titles = new Set<string>()
+      const filteredFeeds = result.feeds.filter((p) => {
+        if (p.episodeCount === 0 || titles.has(p.title)) return false
+        titles.add(p.title)
+        return true
+      })
+
+      const uniquePodcasts = {
+        ...result,
+        feeds: filteredFeeds,
+      }
+
+      setPodcasts(uniquePodcasts)
       setActiveView('podcast')
 
       // Avoid duplicates, add to beginning, and limit history size
