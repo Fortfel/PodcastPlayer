@@ -42,6 +42,7 @@ catalog:
   '@tanstack/react-router': ^1.133.21
   '@tanstack/react-router-devtools': ^1.133.21
   '@tanstack/react-store': ^0.8.0
+  '@tanstack/react-virtual': ^3.13.13
   '@tanstack/router-plugin': ^1.133.21
   '@tanstack/zod-adapter': ^1.133.36
   '@trpc/client': ^11.6.0

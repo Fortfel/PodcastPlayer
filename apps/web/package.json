@@ -21,6 +21,7 @@
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-store": "catalog:",
+    "@tanstack/react-virtual": "catalog:",
     "@tanstack/zod-adapter": "catalog:",
     "@workspace/api": "workspace:*",
     "html-react-parser": "^5.2.10",
