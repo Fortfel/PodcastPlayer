@@ -1,10 +1,12 @@
 import type * as React from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+import { useStore } from '@tanstack/react-store'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@workspace/ui/components/tabs'
 import { useMediaQuery } from '@workspace/ui/hooks/use-media-query'
 import { cn } from '@workspace/ui/lib/utils'
 
+import { usePodcastPlayerStore } from '@/hooks/use-podcast-player-store'
 import { Player } from '@/routes/_app/-components/layout/player'
 import { PodcastsList } from '@/routes/_app/-components/layout/podcasts-list'
 import { Queue } from '@/routes/_app/-components/layout/queue'
@@ -15,6 +17,9 @@ export const Route = createFileRoute('/_app/')({
 })
 
 function HomeComponent(): React.JSX.Element {
+  const { store } = usePodcastPlayerStore()
+  const currentlyPlaying = useStore(store, (state) => state.currentlyPlaying)
+
   const isDesktop = useMediaQuery('(min-width: 1024px)')
 
   const shadowClass = 'shadow-[0_15px_30px_5px_rgba(0,0,0,0.3)]'
@@ -28,7 +33,7 @@ function HomeComponent(): React.JSX.Element {
       <Queue className={cn(shadowClass, 'col-start-2 row-span-1 row-start-3 overflow-y-auto')} />
     </div>
   ) : (
-    <Tabs defaultValue="search" className="grid grid-cols-1 grid-rows-[auto_1fr]">
+    <Tabs defaultValue={currentlyPlaying ? 'listen' : 'search'} className="grid grid-cols-1 grid-rows-[auto_1fr]">
       <TabsList className="[&>[data-slot=tabs-trigger][data-state=active]]:bg-success [&>[data-slot=tabs-trigger][data-state=active]]:text-success-foreground flex h-12 w-full justify-center border sm:mb-4">
         <TabsTrigger value="search">Search</TabsTrigger>
         <TabsTrigger value="listen">Listen</TabsTrigger>
