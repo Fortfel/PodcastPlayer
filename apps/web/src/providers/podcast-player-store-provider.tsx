@@ -3,6 +3,8 @@ import { Store } from '@tanstack/react-store'
 
 import type { RouterOutputs } from '@workspace/api/server'
 
+import { loadPlayerFromStorage, loadQueueFromStorage, saveQueueToStorage } from '@/lib/podcast-player-storage'
+
 export type Episode = RouterOutputs['podcastIndex']['searchEpisodeByItunesId']['items'][number]
 
 export interface PodcastPlayerStoreState {
@@ -19,31 +21,12 @@ export interface PodcastPlayerStoreState {
   errorMessage: string | null
 }
 
-const QUEUE_STORAGE_KEY = 'podcastplayer-queue'
-
-const loadQueueFromStorage = (): Array<Episode> => {
-  try {
-    const saved = localStorage.getItem(QUEUE_STORAGE_KEY)
-    return saved ? (JSON.parse(saved) as Array<Episode>) : []
-  } catch (error) {
-    console.error('Failed to load queue from localStorage:', error)
-    return []
-  }
-}
-
-const saveQueueToStorage = (queue: Array<Episode>) => {
-  try {
-    localStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify(queue))
-  } catch (error) {
-    console.error('Failed to save queue to localStorage:', error)
-  }
-}
-
 const PodcastPlayerStoreContext = React.createContext<Store<PodcastPlayerStoreState> | null>(null)
 
 const PodcastPlayerStoreProvider = ({ children }: { children: React.ReactNode }) => {
   const [store] = React.useState(() => {
     const initialQueue = loadQueueFromStorage()
+    const initialPlayer = loadPlayerFromStorage()
 
     const storeInstance = new Store<PodcastPlayerStoreState>({
       isSubmitting: false,
@@ -53,7 +36,7 @@ const PodcastPlayerStoreProvider = ({ children }: { children: React.ReactNode })
       selectedEpisode: null,
       episodes: null,
       queue: initialQueue,
-      currentlyPlaying: null,
+      currentlyPlaying: initialPlayer.episode,
 
       errorMessage: null,
     })

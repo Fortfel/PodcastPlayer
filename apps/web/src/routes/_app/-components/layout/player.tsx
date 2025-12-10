@@ -11,6 +11,7 @@ import { Progress } from '@workspace/ui/components/progress'
 import { cn } from '@workspace/ui/lib/utils'
 
 import { usePodcastPlayerStore } from '@/hooks/use-podcast-player-store'
+import { loadPlayerFromStorage, savePlayerToStorage } from '@/lib/podcast-player-storage'
 
 const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60)
@@ -18,8 +19,13 @@ const formatTime = (seconds: number): string => {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
+const SAVE_INTERVAL_MS = 5000
+
 const Player = ({ className, ...props }: React.ComponentProps<'div'>) => {
   const audioRef = React.useRef<HTMLAudioElement>(null)
+  const lastSavedTimeRef = React.useRef(0)
+  const prevEpisodeIdRef = React.useRef<number | null>(null)
+  const hasInitializedRef = React.useRef(false)
 
   const [isPlaying, setIsPlaying] = React.useState(false)
   const [currentTime, setCurrentTime] = React.useState(0)
@@ -41,20 +47,57 @@ const Player = ({ className, ...props }: React.ComponentProps<'div'>) => {
       setIsPlaying(false)
       setCurrentTime(0)
       setDuration(0)
+      prevEpisodeIdRef.current = null
+      savePlayerToStorage({ episode: null, currentTime: 0 })
       return
     }
 
+    const isSameEpisode = prevEpisodeIdRef.current === currentlyPlaying.id
+    if (isSameEpisode) return
+
+    const savedState = loadPlayerFromStorage()
+    const isRestoringFromStorage =
+      !hasInitializedRef.current && savedState.episode?.id === currentlyPlaying.id && savedState.currentTime > 0
+
     audio.src = currentlyPlaying.enclosureUrl
     audio.load()
-    setCurrentTime(0)
     setDuration(0)
-    void audio.play()
-    setIsPlaying(true)
+
+    if (isRestoringFromStorage) {
+      audio.currentTime = savedState.currentTime
+      setCurrentTime(savedState.currentTime)
+      setIsPlaying(false)
+    } else {
+      setCurrentTime(0)
+      void audio.play().catch(() => setIsPlaying(false))
+      setIsPlaying(true)
+      savePlayerToStorage({ episode: currentlyPlaying, currentTime: 0 })
+    }
+
+    prevEpisodeIdRef.current = currentlyPlaying.id
+    hasInitializedRef.current = true
+  }, [currentlyPlaying])
+
+  React.useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (currentlyPlaying && audioRef.current) {
+        savePlayerToStorage({ episode: currentlyPlaying, currentTime: audioRef.current.currentTime })
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [currentlyPlaying])
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime)
+      const time = audioRef.current.currentTime
+      setCurrentTime(time)
+
+      if (currentlyPlaying && time - lastSavedTimeRef.current >= SAVE_INTERVAL_MS / 1000) {
+        lastSavedTimeRef.current = time
+        savePlayerToStorage({ episode: currentlyPlaying, currentTime: time })
+      }
     }
   }
 
@@ -88,6 +131,10 @@ const Player = ({ className, ...props }: React.ComponentProps<'div'>) => {
     if (isPlaying) {
       audio.pause()
       setIsPlaying(false)
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (currentlyPlaying) {
+        savePlayerToStorage({ episode: currentlyPlaying, currentTime: audio.currentTime })
+      }
     } else {
       void audio.play()
       setIsPlaying(true)
