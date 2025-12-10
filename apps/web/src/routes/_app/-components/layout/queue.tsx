@@ -47,7 +47,7 @@ const Queue = ({ className, ...props }: React.ComponentProps<'div'>) => {
                     <img
                       src={episode.image || episode.feedImage || '/default-podcast.png'}
                       alt={episode.title}
-                      className="aspect-square max-w-20 object-cover"
+                      className="aspect-square max-w-20 rounded-l-lg object-cover"
                       onError={(e) => {
                         e.currentTarget.src = '/default-podcast.png'
                       }}
