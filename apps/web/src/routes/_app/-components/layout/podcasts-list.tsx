@@ -1,6 +1,7 @@
-import type * as React from 'react'
+import * as React from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useStore } from '@tanstack/react-store'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import htmlReactParser from 'html-react-parser'
 import { CirclePlayIcon, ListIcon } from 'lucide-react'
 
@@ -42,12 +43,12 @@ const PodcastCard = ({ feed, onSelect }: { feed: PodcastFeed; onSelect?: (feed: 
   <button
     type="button"
     onClick={() => onSelect?.(feed)}
-    className="bg-card @max-md:flex-col @max-md:items-center hover:ring-primary/50 flex cursor-pointer items-start gap-2 rounded-lg border text-left shadow-xl transition-all hover:ring-2"
+    className="bg-card @max-md:flex-col @max-md:items-center hover:ring-primary/50 mb-4 flex w-full cursor-pointer items-start gap-2 rounded-lg border text-left shadow-xl transition-all hover:ring-2"
   >
     <img
       src={feed.image || '/default-podcast.png'}
       alt={feed.title}
-      className="shrink-1 @max-md:max-w-52 aspect-square size-full min-w-32 max-w-60 object-cover"
+      className="shrink-1 @max-md:max-w-52 aspect-square size-full min-w-32 max-w-60 rounded-l-lg object-cover"
       onError={(e) => {
         e.currentTarget.src = '/default-podcast.png'
       }}
@@ -75,11 +76,11 @@ type EpisodeCardProps = {
 }
 
 const EpisodeCard = ({ episode, onPlay, onAddToQueue }: EpisodeCardProps) => (
-  <div className="bg-card @max-md:flex-col @max-md:items-center hover:ring-primary/50 flex items-start gap-2 rounded-lg border text-left shadow-xl">
+  <div className="bg-card @max-md:flex-col @max-md:items-center hover:ring-primary/50 mb-4 flex w-full items-start gap-2 rounded-lg border text-left shadow-xl">
     <img
       src={episode.image || episode.feedImage || '/default-podcast.png'}
       alt={episode.title}
-      className="shrink-1 @max-md:max-w-52 aspect-square size-full min-w-32 max-w-60 object-cover"
+      className="shrink-1 @max-md:max-w-52 aspect-square size-full min-w-32 max-w-60 rounded-l-lg object-cover"
       onError={(e) => {
         e.currentTarget.src = '/default-podcast.png'
       }}
@@ -130,6 +131,8 @@ const PodcastsList = ({ className, ...props }: React.ComponentProps<'div'>) => {
   const trpc = useTRPC()
   const queryClient = useQueryClient()
 
+  const scrollAreaRef = React.useRef<HTMLDivElement>(null)
+
   const {
     store,
     setIsSubmitting,
@@ -147,6 +150,25 @@ const PodcastsList = ({ className, ...props }: React.ComponentProps<'div'>) => {
   const selectedPodcast = useStore(store, (state) => state.selectedPodcast)
   const podcasts = useStore(store, (state) => state.podcasts)
   const episodes = useStore(store, (state) => state.episodes)
+
+  // Determine which list to virtualize
+  const items = currentView === 'podcast' ? (podcasts?.feeds ?? []) : (episodes?.items ?? [])
+
+  const virtualizer = useVirtualizer({
+    count: items.length,
+    getScrollElement: () => {
+      // ScrollArea creates a [data-radix-scroll-area-viewport] element that's the actual scrollable container
+      return scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement
+    },
+    estimateSize: () => 258, // Estimated height of each card (adjust based on your card height)
+    overscan: 5, // Render 5 extra items above and below viewport for smoother scrolling
+  })
+
+  const virtualItems = virtualizer.getVirtualItems()
+
+  React.useEffect(() => {
+    virtualizer.scrollToIndex(0, { align: 'start' })
+  }, [currentView, episodes, podcasts, virtualizer])
 
   const handlePodcastClick = async (feed: PodcastFeed) => {
     if (!feed.itunesId) return
@@ -172,33 +194,83 @@ const PodcastsList = ({ className, ...props }: React.ComponentProps<'div'>) => {
 
   return (
     <div data-slot="podcasts-list" className={cn('bg-muted @container rounded-lg', className)} {...props}>
-      <ScrollArea className="h-full">
+      {isLoading ? (
         <div className="flex flex-col gap-4 p-4 sm:p-6">
-          {isLoading ? (
-            <LoadingSkeleton />
-          ) : errorMessage ? (
-            <div className="text-center text-xl">{errorMessage}</div>
-          ) : currentView === 'podcast' && podcasts?.status === 'true' && podcasts.feeds.length > 0 ? (
-            podcasts.feeds.map((feed) => (
-              <PodcastCard key={feed.id} feed={feed} onSelect={(feed) => void handlePodcastClick(feed)} />
-            ))
-          ) : currentView === 'episode' && episodes?.status === 'true' && episodes.items.length > 0 ? (
-            <>
-              <div className="flex items-center gap-3">
-                <Button variant="outline" size="sm" onClick={() => setActiveView('podcast')}>
-                  ← Back
-                </Button>
-                <h2 className="text-foreground text-lg font-semibold">{selectedPodcast?.title}</h2>
-              </div>
-              {episodes.items.map((episode) => (
-                <EpisodeCard key={episode.id} episode={episode} onPlay={playEpisode} onAddToQueue={addToQueue} />
-              ))}
-            </>
-          ) : (
-            <div className="text-center text-xl">No {currentView}s found</div>
-          )}
+          <LoadingSkeleton />
         </div>
-      </ScrollArea>
+      ) : errorMessage ? (
+        <div className="p-4 text-center text-xl">{errorMessage}</div>
+      ) : currentView === 'podcast' && podcasts?.status === 'true' && podcasts.feeds.length > 0 ? (
+        <ScrollArea ref={scrollAreaRef} className="h-full">
+          <div
+            className="relative my-1 w-full"
+            style={{
+              height: `${virtualizer.getTotalSize().toString()}px`,
+            }}
+          >
+            {virtualItems.map((virtualRow) => {
+              const feed = podcasts.feeds[virtualRow.index] as PodcastFeed
+              return (
+                <div
+                  key={virtualRow.key}
+                  data-index={virtualRow.index}
+                  ref={virtualizer.measureElement}
+                  className="absolute left-0 top-0 w-full px-4 sm:px-6"
+                  style={{
+                    height: `${virtualRow.size.toString()}px`,
+                    transform: `translateY(${virtualRow.start.toString()}px)`,
+                  }}
+                >
+                  <PodcastCard feed={feed} onSelect={(feed) => void handlePodcastClick(feed)} />
+                </div>
+              )
+            })}
+          </div>
+        </ScrollArea>
+      ) : currentView === 'episode' && episodes?.status === 'true' && episodes.items.length > 0 ? (
+        <div className="flex h-full flex-col">
+          <div className="bg-muted flex shrink-0 items-center gap-3 border-b p-4 sm:p-6">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setActiveView('podcast')
+              }}
+            >
+              ← Back
+            </Button>
+            <h2 className="text-foreground text-lg font-semibold">{selectedPodcast?.title}</h2>
+          </div>
+          <ScrollArea ref={scrollAreaRef} className="min-h-0 flex-1">
+            <div
+              className="relative w-full"
+              style={{
+                height: `${virtualizer.getTotalSize().toString()}px`,
+              }}
+            >
+              {virtualItems.map((virtualRow) => {
+                const episode = episodes.items[virtualRow.index] as Episode
+                return (
+                  <div
+                    key={virtualRow.key}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                    className="absolute left-0 top-0 w-full px-4 sm:px-6"
+                    style={{
+                      height: `${virtualRow.size.toString()}px`,
+                      transform: `translateY(${virtualRow.start.toString()}px)`,
+                    }}
+                  >
+                    <EpisodeCard episode={episode} onPlay={playEpisode} onAddToQueue={addToQueue} />
+                  </div>
+                )
+              })}
+            </div>
+          </ScrollArea>
+        </div>
+      ) : (
+        <div className="p-4 text-center text-xl">No {currentView}s found</div>
+      )}
     </div>
   )
 }
