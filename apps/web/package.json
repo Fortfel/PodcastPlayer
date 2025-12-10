@@ -55,6 +55,7 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-browser-sync": "catalog:",
+    "vite-plugin-pwa": "^1.2.0",
     "vite-tsconfig-paths": "catalog:"
   },
   "browserslist": [

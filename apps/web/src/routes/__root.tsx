@@ -10,6 +10,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     meta: [
       {
         title: 'Podcast Player',
+        description: 'A modern podcast player app',
+        themeColor: '#1a1a2e',
       },
     ],
     links: [
@@ -17,6 +19,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         rel: 'icon',
         type: 'image/png',
         href: 'https://www.google.com/s2/favicons?domain=www.fortfel.com',
+      },
+      {
+        rel: 'apple-touch-icon',
+        type: 'image/png',
+        href: '/pwa-192x192.png',
       },
     ],
   }),

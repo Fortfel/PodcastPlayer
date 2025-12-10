@@ -5,6 +5,7 @@ import legacy from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react-swc'
 import { defineConfig, loadEnv } from 'vite'
 import VitePluginBrowserSync from 'vite-plugin-browser-sync'
+import { VitePWA } from 'vite-plugin-pwa'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { z } from 'zod'
 
@@ -65,6 +66,61 @@ export default defineConfig(({ mode }) => {
           bs: {
             port: PORT + 11,
           },
+        },
+      }),
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['default-podcast.png'],
+        manifest: {
+          name: 'Podcast Player',
+          short_name: 'PodcastPlayer',
+          description: 'A modern podcast player app',
+          theme_color: '#1a1a2e',
+          background_color: '#1a1a2e',
+          display: 'standalone',
+          orientation: 'portrait',
+          scope: env.PUBLIC_BASE_PATH,
+          start_url: env.PUBLIC_BASE_PATH,
+          icons: [
+            {
+              src: 'pwa-192x192.png',
+              sizes: '192x192',
+              type: 'image/png',
+            },
+            {
+              src: 'pwa-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+            },
+            {
+              src: 'pwa-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable',
+            },
+          ],
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/api\.podcastindex\.org\/.*/i,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'podcast-api-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24, // 24 hours
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+          ],
+        },
+        devOptions: {
+          enabled: false, // Enable in dev if you want to test PWA
         },
       }),
     ],
