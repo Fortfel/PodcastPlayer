@@ -1,362 +1,142 @@
-# Monorepo Reference Guide
+# 🎧 Podcast Player
 
-## 🏗️ Architecture Overview
+A modern, full-stack podcast player application with PWA support for offline listening.
 
-This is a **full-stack TypeScript monorepo** built with **Turborepo** for efficient build orchestration and caching.
+![Podcast Player](apps/web/public/default-podcast.png)
 
-## 📁 Project Structure
+## ✨ Features
+
+- **🔍 Podcast Search** - Search podcasts using the Podcast Index API
+- **📋 Episode Browsing** - Browse episodes with virtualized scrolling for performance
+- **▶️ Audio Playback** - Full-featured player with play/pause, skip, seek, and progress tracking
+- **📝 Queue Management** - Add episodes to queue, reorder, and manage your listening list
+- **💾 Persistent State** - Player state and queue saved to localStorage across sessions
+- **📱 PWA Support** - Install as app, offline caching
+- **🌙 Dark Mode** - Light/dark/system theme support
+- **📱 Responsive** - Mobile-first design with desktop layout
+
+## 🏗️ Architecture
+
+This is a **TypeScript monorepo** built with **Turborepo**:
 
 ```
 ├── apps/
-│   ├── fastify/          # Backend API (Fastify + tRPC + better-auth)
-│   └── web/              # Frontend (React 19 + Vite)
+│   ├── fastify/          # Backend API (Fastify + tRPC)
+│   └── web/              # Frontend PWA (React 19 + Vite)
 ├── packages/
 │   ├── api/              # tRPC API definitions & routers
-│   ├── auth/             # Better Auth configuration
-│   ├── db/               # Drizzle ORM + MySQL
-│   ├── i18n/             # Internationalization with Paraglide JS
-│   ├── ui/               # Shadcn/ui component library with theming
-│   └── validators/       # Zod validation schemas
-├── tooling/
-│   ├── eslint/           # Shared ESLint configurations
-│   ├── prettier/         # Shared Prettier configuration
-│   └── typescript/       # Shared TypeScript configurations
-└── [config files]
+│   └── ui/               # Shadcn/ui component library
+└── tooling/              # Shared ESLint, Prettier, TypeScript configs
 ```
 
 ## 🚀 Tech Stack
 
-### **Frontend** (`apps/web/`)
-
+### Frontend (`apps/web/`)
 - **React 19** with TypeScript
-- **Vite** for build tooling
-- **Tailwind CSS v4** for styling with dark mode support
+- **Vite** + **vite-plugin-pwa** for PWA support
+- **Tailwind CSS v4** for styling
 - **TanStack Router** for file-based routing
-- **TanStack Query** for server state management
-- **tRPC** for type-safe API calls
-- **Zustand** for client state management
-- **Shadcn/ui** components from `@workspace/ui`
-- **next-themes** for theme switching
-- **Paraglide JS** for internationalization
+- **TanStack Query** for server state
+- **TanStack Store** for global state management
+- **TanStack Virtual** for virtualized lists
+- **Shadcn/ui** components
 
-### **Backend** (`apps/fastify/`)
-
+### Backend (`apps/fastify/`)
 - **Fastify** web framework
-- **tRPC** for type-safe APIs (using `@workspace/api`)
-- **TypeScript** with ES modules
-- **Node.js Subpath Imports** (`#/*` pattern) for clean internal module resolution
-- Security plugins: Helmet, CORS, Rate Limiting, Cookies
+- **tRPC** for type-safe APIs
+- **Podcast Index API** integration
+- Security: Helmet, CORS, Rate Limiting
 
-### **Database** (`packages/db/`)
+## 🔧 Getting Started
 
-- **Drizzle ORM** with MySQL
-- **MySQL2** driver with connection pooling
-- **Drizzle Kit** for migrations and studio
-- **Drizzle Seed** for database seeding
+### Prerequisites
+- Node.js 20+
+- pnpm 9+
+- [Podcast Index API credentials](https://podcastindex.org/)
 
-### **Authentication** (`packages/auth/`)
+### Installation
 
-- **Better Auth** with Drizzle adapter
-- Schema generation via Better Auth CLI
-- Integration with database package
+1. **Clone and install:**
+   ```bash
+   git clone <repo-url>
+   cd PodcastPlayer
+   pnpm install
+   ```
 
-### **Shared Libraries**
+2. **Set up environment variables:**
+   ```bash
+   # apps/fastify/.env
+   cp apps/fastify/.env.example apps/fastify/.env
+   # Add your Podcast Index API key and secret
+   
+   # apps/web/.env
+   cp apps/web/.env.example apps/web/.env
+   ```
 
-- **UI Components** (`packages/ui/`): Shadcn/ui with CVA, Lucide icons, theme support
-- **Validators** (`packages/validators/`): Zod schemas
-- **API** (`packages/api/`): tRPC definitions & routers
-- **Internationalization** (`packages/i18n/`): Paraglide JS for i18n
+3. **Build packages and start development:**
+   ```bash
+   pnpm build
+   pnpm dev
+   ```
 
-### **Development Tools**
+4. **Open the app:**
+   - Frontend: http://localhost:3035
+   - Backend: http://localhost:3030
 
-- **Package Manager**: pnpm with workspaces
-- **Build System**: Turborepo with intelligent caching
-- **Linting**: ESLint with React, TypeScript, and accessibility rules
-- **Formatting**: Prettier with Tailwind plugin
-- **Type Checking**: TypeScript with strict mode
-
-## 🔧 Key Scripts
-
-### **Root Level Commands**
+## 📜 Scripts
 
 ```bash
 # Development
-pnpm dev                # Start all apps in development mode (with turbo watch)
-pnpm build              # Build all packages and apps
-pnpm start              # Start production builds
-pnpm lint               # Lint all packages
-pnpm lint:fix           # Fix linting issues
-pnpm typecheck          # Type check all packages
-pnpm format             # Check formatting
-pnpm format:fix         # Fix formatting issues
+pnpm dev              # Start all apps in dev mode
+pnpm build            # Build all packages and apps
+pnpm lint             # Lint all packages
+pnpm typecheck        # Type check all packages
 
-# Database Operations
-pnpm db:generate        # Generate Drizzle schema
-pnpm db:migrate         # Run database migrations
-pnpm db:push            # Push schema to database
-pnpm db:seed            # Seed database with test data
-pnpm db:studio          # Open Drizzle Studio
-
-# Authentication
-pnpm auth:schema:generate # Generate Better Auth schema
-
-# Utilities
-pnpm ui-add             # Add Shadcn/ui components to web app
-pnpm clean              # Clean all node_modules and build artifacts
-pnpm clean:cache        # Clean all cache artifacts
-pnpm clean:build        # Clean build artifacts only
-pnpm docs               # Generate TypeDoc documentation
+# Individual apps
+pnpm --filter=web dev
+pnpm --filter=fastify dev
 ```
 
-### **App-Specific Commands**
+## 📱 PWA Features
 
-```bash
-# Frontend (apps/web)
-turbo dev --filter=web
-turbo build --filter=web
-pnpm --filter=web ui-add  # Add Shadcn components
+The app is a Progressive Web App with:
+- **Installable** - Add to home screen on mobile/desktop
+- **Offline Support** - Static assets cached for offline use
+- **Auto-update** - Service worker updates automatically
 
-# Backend (apps/fastify)
-turbo dev --filter=fastify
-turbo build --filter=fastify
-```
+### Caching Strategy
+- **Static assets** - Precached on install
+- **Podcast API** - NetworkFirst, 24h cache
+- **Images** - CacheFirst, 100 images, 30 days
 
-## 🚀 Production Build & Deployment
+## 🎯 Key Features Explained
 
-### **Build Configuration**
+### Player State Persistence
+- Currently playing episode and position saved to localStorage
+- Queue persisted across sessions
+- Restores playback position on page refresh (paused state)
 
-The backend uses **tsup** for production builds with workspace package bundling:
+### Virtualized Scrolling
+- Episode lists use `@tanstack/react-virtual`
+- Smooth scrolling with thousands of episodes
+- Efficient memory usage
 
-**Key Configuration (`apps/fastify/tsup.config.ts`):**
-
-```typescript
-export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['esm'],
-  target: 'node20',
-  clean: true,
-  sourcemap: false,
-  minify: true,
-
-  // Bundle workspace packages but exclude external deps
-  noExternal: ['@workspace/api', '@workspace/auth', '@workspace/db', '@workspace/validators'],
-
-  // External dependencies (don't bundle these)
-  external: [
-    'fastify',
-    '@fastify/*',
-    'mysql2',
-    'drizzle-orm',
-    'zod', // ... other deps
-  ],
-
-  // Handle TypeScript compilation for workspace packages
-  esbuildOptions(options) {
-    options.resolveExtensions = ['.ts', '.tsx', '.js', '.jsx']
-    options.conditions = ['typescript']
-  },
-})
-```
-
-### **Production Build Process**
-
-```bash
-# Build backend for production
-pnpm --filter=fastify build
-
-# This runs:
-# 1. tsup (bundles code + workspace packages)
-# 2. create-prod-package.js (creates production package.json)
-```
-
-### **Deployment Strategy**
-
-**Simple Deployment Process:**
-
-1. **Build the application:**
-
-   ```bash
-   pnpm --filter=fastify build
-   ```
-
-2. **Upload to server:**
-
-- Upload entire `apps/fastify/dist/` folder
-
-3. **Install production dependencies (unless you already installed and uploaded them in dist):**
-
-   ```bash
-   cd dist/
-   npm install --production
-   ```
-
-4. **Start the application:**
-   ```bash
-   node index.js
-   ```
-
-**What gets deployed:**
-
-- Bundled application code (`index.js`)
-- Production `package.json` (only external dependencies)
-- Environment variables (`.env` file)
-- Node modules (installed locally or on server)
-
-**Benefits:**
-
-- Workspace packages are pre-bundled (no monorepo complexity on server)
-- Only external dependencies need to be installed
-- Single executable file with all internal code
-- Environment variables handled via `.env` file
-
-## 📦 Package Dependencies
-
-### **Workspace Dependencies**
-
-- `@workspace/api` - tRPC API definitions & routers
-- `@workspace/auth` - Better Auth configuration
-- `@workspace/db` - Database client and schemas
-- `@workspace/i18n` - Internationalization with Paraglide JS
-- `@workspace/ui` - Shared UI components with theming
-- `@workspace/validators` - Zod validation schemas
-- `@workspace/eslint-config` - ESLint configurations
-- `@workspace/typescript-config` - TypeScript configurations
-- `@workspace/prettier-config` - Prettier configuration
-- `@workspace/tailwind-config` - Tailwind CSS configuration
-
-### **Key External Dependencies**
-
-- **React Ecosystem**: React 19, React DOM, TypeScript types
-- **Build Tools**: Vite, Turborepo, TypeScript, ESLint, Prettier
-- **Backend**: Fastify, tRPC, Better Auth
-- **Database**: Drizzle ORM, MySQL2, Drizzle Kit, Drizzle Seed
-- **UI/Styling**: Tailwind CSS v4, Shadcn/ui, CVA, Lucide icons, next-themes
-- **Routing**: TanStack Router with devtools
-- **State Management**: TanStack Query, Zustand
-- **Validation**: Zod
-- **Internationalization**: Paraglide JS
-
-## 🔄 Development Workflow
-
-### **Starting Development**
-
-1. Install dependencies: `pnpm install`
-2. Set up environment variables (copy `.env.example` files)
-3. Generate better-auth schema: `pnpm auth:schema:generate`
-4. Generate database schema: `pnpm db:generate`
-5. Migrate schema to database: `pnpm db:migrate`
-6. Seed database: `pnpm db:seed`
-7. Build type declarations in packages: `pnpm build`
-8. Start development: `pnpm dev`
-
-### **Adding New Features**
-
-1. **UI Components**: Run `pnpm ui-add` from root (targets web app)
-2. **Database Schema**: Modify `packages/db/src/schemas/schema.ts`
-3. **API Routes**: Add tRPC routers to `packages/api/src/server/`
-4. **Validation**: Add schemas to `packages/validators/src/`
-5. **Frontend Pages**: Add routes to `apps/web/src/routes/`
-6. **Translations**: Add messages to `packages/i18n/messages/`
-
-### **Database Changes**
-
-1. Modify schema in `packages/db/src/schemas/schema.ts`
-2. Generate migration: `pnpm db:generate`
-3. Apply migration: `pnpm db:migrate` or `pnpm db:push`
-4. Update seed data if needed: `packages/db/src/seed/seed.ts`
-5. Regenerate auth schema if needed: `pnpm auth:schema:generate`
-
-## 🎯 Important Notes
-
-### **TypeScript Configuration**
-
-- Uses `"moduleResolution": "Bundler"` with modern bundler-based resolution
-- `"allowImportingTsExtensions": true` allows importing `.ts` files directly
-- Internal packages use `"emitDeclarationOnly": true` for faster IDE performance
-- Strict mode enabled across all packages with additional safety checks
-- Shared base configurations in `tooling/typescript/`
-
-### **Node.js Subpath Imports** (Fastify Backend)
-
-The Fastify backend uses **Node.js subpath imports** for clean internal module resolution:
-
-**Package.json Configuration:**
-
-```json
-{
-  "imports": {
-    "#/*.js": "./dist/*.js"
-  }
-}
-```
-
-**TypeScript Configuration:**
-
-```json
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "#/*": ["./src/*"]
-    },
-    "rootDir": "./src",
-    "outDir": "./dist"
-  }
-}
-```
-
-**Benefits:**
-
-- Clean imports without relative path traversal (`../../../`)
-- Consistent import paths regardless of file location
-- Maps TypeScript source (`./src/*`) to compiled output (`./dist/*`)
-- Standard Node.js feature (no additional tooling required)
-
-### **Database Integration**
-
-- Drizzle ORM with MySQL2 driver
-- Better Auth generates auth schema automatically
-- Seeding supports both auth tables and custom tables
-- Connection pooling configured for production
-
-### **Authentication & Theming**
-
-- **Better Auth** handles user management with Drizzle adapter
-- **Schema generation** via CLI: `pnpm auth:schema:generate`
-- **Theme system** with next-themes supporting light/dark/system modes
-- **Theme persistence** via localStorage with system preference detection
-- **Theme toggle** component available in `@workspace/ui`
-
-## 🚨 Common Issues & Solutions
-
-1. **TypeScript Performance**: Internal packages only emit declarations for faster IDE performance. Remember to build them before development.
-2. **Drizzle Seed Issues**: Import tables directly, not via re-exports for proper relationship analysis
-3. **Better Auth CLI**: Requires direct `betterAuth()` calls for static analysis
-4. **Build Errors**: Run `pnpm db:generate` and `pnpm auth:schema:generate` before building
-5. **Type Errors**: Ensure all packages are built with `pnpm build`
-6. **Production Build**: Must include `noExternal: ['@workspace/*']` in tsup config to bundle workspace packages
-7. **Theme Issues**: Ensure Tailwind CSS is configured with `darkMode: 'class'` for theme switching
-8. **i18n Setup**: Run paraglide compilation before development for message generation
-9. **TypeScript Errors**: Can try to clean node_modules and reinstall/rebuild them (`pnpm clean && pnpm install && pnpm build`)
+### Responsive Design
+- Mobile: Tabbed interface (Search / Listen)
+- Desktop: Side-by-side layout with player and queue
 
 ## 📚 Documentation Links
 
-- [Turborepo Docs](https://turborepo.com/docs)
-- [Drizzle ORM](https://orm.drizzle.team/)
-- [Better Auth](https://better-auth.com/)
-- [Fastify](https://fastify.dev/)
-- [tRPC](https://trpc.io/)
+- [Podcast Index API](https://podcastindex-org.github.io/docs-api/)
+- [TanStack Router](https://tanstack.com/router)
+- [TanStack Query](https://tanstack.com/query)
+- [Vite PWA Plugin](https://vite-pwa-org.netlify.app/)
 - [Shadcn/ui](https://ui.shadcn.com/)
-- [Tailwind CSS v4](https://tailwindcss.com/docs)
+
+## 📄 License
+
+MIT
 
 ---
 
-## Taken inspiration from:
-
-- [rt-stack](https://github.com/nktnet1/rt-stack/tree/551fe2c6adf136f4f8adf04dfa70d88b8cd137e9)
-- [t3-turbo](https://github.com/t3-oss/create-t3-turbo/tree/dcf9c001dc853c929a3d467435e297a7480a36e1)
-- [Fullstack-SaaS-Boilerplate](https://github.com/alan345/Fullstack-SaaS-Boilerplate/tree/main)
-
----
-
-_This reference was last updated on 2025-09-20. Keep it updated as the project evolves._
+_Built with ❤️ using React, Fastify, and the Podcast Index API_
