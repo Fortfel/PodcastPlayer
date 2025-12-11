@@ -2,8 +2,6 @@
 
 A modern, full-stack podcast player application with PWA support for offline listening.
 
-![Podcast Player](apps/web/public/default-podcast.png)
-
 ## ✨ Features
 
 - **🔍 Podcast Search** - Search podcasts using the Podcast Index API
