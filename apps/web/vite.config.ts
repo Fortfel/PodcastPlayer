@@ -15,11 +15,13 @@ const envSchema = z.object({
    * will resemble a URL such as: http://localhost:3035.
    * This will then be used to set the vite dev server's host and port.
    */
-  PUBLIC_WEB_URL: z.url({
-    protocol: /^https?$/,
-    hostname: z.regexes.hostname,
-    error: 'Invalid web URL',
-  }),
+  PUBLIC_WEB_URL: z
+    .url({
+      protocol: /^https?$/,
+      hostname: z.regexes.hostname,
+      error: 'Invalid web URL',
+    })
+    .default('http://localhost:3035'),
 
   /**
    * Set this if you want to run or deploy your app at a base URL. This is
