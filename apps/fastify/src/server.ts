@@ -50,6 +50,13 @@ export function createServer(): {
     return reply.send({ message: 'API is running!' })
   })
 
+  // Handle requests at the API base path (for health checks)
+  if (env.SERVER_API_PATH !== '/') {
+    server.get(env.SERVER_API_PATH, async (_request: FastifyRequest, reply: FastifyReply) => {
+      return reply.send({ message: 'API is running!' })
+    })
+  }
+
   // TRPC plugin
   server.register(fastifyTRPCPlugin, getFastifyTRPCPluginOptions(podcastIndexApi))
 
@@ -103,7 +110,7 @@ export function createServer(): {
 
   const start = async (): Promise<void> => {
     try {
-      const address = await server.listen({ port: env.SERVER_PORT })
+      const address = await server.listen({ port: env.SERVER_PORT, host: '127.0.0.1' })
 
       server.log.info(`Server running at ${address}`)
       server.log.info(`Environment: ${env.NODE_ENV}`)
