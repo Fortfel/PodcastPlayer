@@ -1,9 +1,36 @@
-import { copyFileSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+
+// Read the pnpm-workspace.yaml catalog
+function getCatalogVersions() {
+  const workspaceContent = readFileSync('../../pnpm-workspace.yaml', 'utf8')
+  const catalog = {}
+
+  // Simple parser for catalog entries
+  const lines = workspaceContent.split('\n')
+  let inCatalog = false
+
+  for (const line of lines) {
+    if (line.startsWith('catalog:')) {
+      inCatalog = true
+      continue
+    }
+    if (inCatalog && line.trim() && !line.startsWith(' ')) {
+      break
+    }
+    if (inCatalog && line.includes(':')) {
+      const match = line.match(/^\s+['"]?([^'":\s]+)['"]?\s*:\s*(.+)$/)
+      if (match) {
+        catalog[match[1]] = match[2].trim()
+      }
+    }
+  }
+
+  return catalog
+}
 
 // Function to collect all dependencies from workspace packages
-function collectWorkspaceDependencies() {
+function collectWorkspaceDependencies(catalog) {
   const workspacePackages = ['../../packages/api/package.json']
-
   const allDeps = {}
 
   for (const pkgPath of workspacePackages) {
@@ -11,10 +38,14 @@ function collectWorkspaceDependencies() {
       const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
       const deps = pkg.dependencies || {}
 
-      // Only include non-workspace dependencies
       for (const [name, version] of Object.entries(deps)) {
         if (!name.startsWith('@workspace/')) {
-          allDeps[name] = version
+          // Resolve catalog: references
+          if (version === 'catalog:') {
+            allDeps[name] = catalog[name] || version
+          } else {
+            allDeps[name] = version
+          }
         }
       }
     } catch (error) {
@@ -25,10 +56,13 @@ function collectWorkspaceDependencies() {
   return allDeps
 }
 
-// Collect all workspace dependencies automatically
-const workspaceDeps = collectWorkspaceDependencies()
+// Get catalog versions
+const catalog = getCatalogVersions()
 
-// Create production package.json
+// Collect workspace dependencies with resolved versions
+const workspaceDeps = collectWorkspaceDependencies(catalog)
+
+// Create production package.json with resolved versions
 const prodPackageJson = {
   name: 'fastify',
   private: true,
@@ -38,14 +72,16 @@ const prodPackageJson = {
     start: 'node index.js',
   },
   dependencies: {
-    // Fastify ecosystem (app-specific)
-    '@fastify/cookie': 'catalog:',
-    '@fastify/cors': 'catalog:',
-    '@fastify/helmet': 'catalog:',
-    '@fastify/rate-limit': 'catalog:',
-    fastify: 'catalog:',
+    // Resolve catalog versions to actual versions
+    '@fastify/cookie': catalog['@fastify/cookie'],
+    '@fastify/cors': catalog['@fastify/cors'],
+    '@fastify/helmet': catalog['@fastify/helmet'],
+    '@fastify/rate-limit': catalog['@fastify/rate-limit'],
+    '@t3-oss/env-core': catalog['@t3-oss/env-core'],
+    fastify: catalog['fastify'],
+    zod: catalog['zod'],
 
-    // Auto-discovered workspace dependencies
+    // Auto-discovered workspace dependencies (already resolved)
     ...workspaceDeps,
   },
 }
@@ -53,15 +89,7 @@ const prodPackageJson = {
 try {
   writeFileSync('dist/package.json', JSON.stringify(prodPackageJson, null, 2))
   console.log('✅ Production package.json created!')
-  console.log('📋 Workspace dependencies found:', Object.keys(workspaceDeps).join(', '))
-
-  // Copy workspace file for catalog resolution
-  copyFileSync('../../pnpm-workspace.yaml', 'dist/pnpm-workspace.yaml')
-  console.log('✅ Workspace file copied!')
-
-  // Copy lock file
-  copyFileSync('../../pnpm-lock.yaml', 'dist/pnpm-lock.yaml')
-  console.log('✅ Lock file copied!')
+  console.log('📋 All dependencies resolved from catalog')
 
   // Copy env file
   copyFileSync('.env', 'dist/.env')
@@ -69,7 +97,7 @@ try {
 
   console.log('\n🚀 Production build complete!')
   console.log('📦 Deploy the entire dist/ folder to your server')
-  console.log('🔧 On server: cd dist && pnpm install --prod && pnpm start')
+  console.log('🔧 On server: npm install --production && npm start')
 } catch (error) {
   console.error('❌ Failed to create production files:', error)
   process.exit(1)
