@@ -16,6 +16,8 @@ import { cn } from '@workspace/ui/lib/utils'
 
 import { usePodcastPlayerStore } from '@/hooks/use-podcast-player-store'
 
+const DEFAULT_PODCAST_IMAGE = `${import.meta.env.BASE_URL}default-podcast.png`
+
 type PodcastFeed = RouterOutputs['podcastIndex']['searchPodcastByTerm']['feeds'][number]
 type Episode = RouterOutputs['podcastIndex']['searchEpisodeByItunesId']['items'][number]
 
@@ -46,11 +48,11 @@ const PodcastCard = ({ feed, onSelect }: { feed: PodcastFeed; onSelect?: (feed: 
     className="bg-card @max-md:flex-col @max-md:items-center hover:ring-primary/50 mb-4 flex w-full cursor-pointer items-start gap-2 rounded-lg border text-left shadow-xl transition-all hover:ring-2"
   >
     <img
-      src={feed.image || '/default-podcast.png'}
+      src={feed.image || DEFAULT_PODCAST_IMAGE}
       alt={feed.title}
       className="shrink-1 @max-md:max-w-52 aspect-square size-full min-w-32 max-w-60 rounded-l-lg object-cover"
       onError={(e) => {
-        e.currentTarget.src = '/default-podcast.png'
+        e.currentTarget.src = DEFAULT_PODCAST_IMAGE
       }}
     />
     <ScrollArea className="@max-md:flex-col @max-md:min-w-0 flex min-w-64 flex-1 p-4">
@@ -78,11 +80,11 @@ type EpisodeCardProps = {
 const EpisodeCard = ({ episode, onPlay, onAddToQueue }: EpisodeCardProps) => (
   <div className="bg-card @max-md:flex-col @max-md:items-center hover:ring-primary/50 mb-4 flex w-full items-start gap-2 rounded-lg border text-left shadow-xl">
     <img
-      src={episode.image || episode.feedImage || '/default-podcast.png'}
+      src={episode.image || episode.feedImage || DEFAULT_PODCAST_IMAGE}
       alt={episode.title}
       className="shrink-1 @max-md:max-w-52 aspect-square size-full min-w-32 max-w-60 rounded-l-lg object-cover"
       onError={(e) => {
-        e.currentTarget.src = '/default-podcast.png'
+        e.currentTarget.src = DEFAULT_PODCAST_IMAGE
       }}
     />
     <ScrollArea className="@max-md:flex-col @max-md:min-w-0 flex min-w-64 flex-1 p-4">

@@ -179,13 +179,15 @@ const Player = ({ className, ...props }: React.ComponentProps<'div'>) => {
       <div className="flex h-full flex-col items-center gap-1 p-4">
         <div className="flex items-center gap-1">
           <img
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-            src={currentlyPlaying?.image || currentlyPlaying?.feedImage || '/default-podcast.png'}
+            src={
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+              currentlyPlaying?.image || currentlyPlaying?.feedImage || `${import.meta.env.BASE_URL}default-podcast.png`
+            }
             // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             alt={currentlyPlaying?.title || 'No episode selected'}
             className="w-50 -mt-20 mb-10 rounded-full object-cover shadow-[0_15px_30px_5px_rgba(0,0,0,0.3)]"
             onError={(e) => {
-              e.currentTarget.src = '/default-podcast.png'
+              e.currentTarget.src = `${import.meta.env.BASE_URL}default-podcast.png`
             }}
           />
           <div className="flex flex-col items-center text-center">

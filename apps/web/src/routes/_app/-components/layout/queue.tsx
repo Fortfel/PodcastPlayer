@@ -45,11 +45,11 @@ const Queue = ({ className, ...props }: React.ComponentProps<'div'>) => {
                 >
                   <ItemMedia>
                     <img
-                      src={episode.image || episode.feedImage || '/default-podcast.png'}
+                      src={episode.image || episode.feedImage || `${import.meta.env.BASE_URL}default-podcast.png`}
                       alt={episode.title}
                       className="aspect-square max-w-20 rounded-l-lg object-cover"
                       onError={(e) => {
-                        e.currentTarget.src = '/default-podcast.png'
+                        e.currentTarget.src = `${import.meta.env.BASE_URL}default-podcast.png`
                       }}
                     />
                   </ItemMedia>
